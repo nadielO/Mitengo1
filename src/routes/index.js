@@ -166,9 +166,9 @@ export default function Router() {
     },
     {
       path: '/',
-      element: <MainLayout />,
+
       children: [
-        { element: <HomePage />, index: true },
+        { element: <Login />, index: true },
         { path: 'about-us', element: <About /> },
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
