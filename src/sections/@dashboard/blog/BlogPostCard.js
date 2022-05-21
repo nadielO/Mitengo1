@@ -3,7 +3,9 @@ import { paramCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Card, Avatar, Typography, CardContent, Stack } from '@mui/material';
+import { Box, Link, Card, Avatar, Typography, CardContent, Stack, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -34,9 +36,14 @@ const OverlayStyle = styled('div')(({ theme }) => ({
 BlogPostCard.propTypes = {
   post: PropTypes.object.isRequired,
   index: PropTypes.number,
+  onDelete: PropTypes.func,
+  onEdit: PropTypes.func,
+
+
 };
 
-export default function BlogPostCard({ post, index }) {
+export default function BlogPostCard({ post, index, onDelete, onEdit }) {
+
   const isDesktop = useResponsive('up', 'md');
 
   const { cover, title, view, comment, share, author, createdAt, galleryImage, description } = post;
@@ -48,7 +55,7 @@ export default function BlogPostCard({ post, index }) {
       <Card>
         <PostContent title={description} view={view} comment={comment} share={share} createdAt={createdAt} index={index} />
         <OverlayStyle />
-        <Image alt="cover" src={galleryImage} sx={{ height: 360 }} />
+        <Image alt="title" src={galleryImage} sx={{ height: 360 }} />
       </Card>
     );
   }
@@ -67,10 +74,10 @@ export default function BlogPostCard({ post, index }) {
             color: 'background.paper',
           }}
         />
-        <Image alt="cover" src={galleryImage} ratio="4/3" />
+        <Image alt="title" src={galleryImage} ratio="4/3" />
       </Box>
 
-      <PostContent title={description} view={view} comment={comment} share={share} createdAt={createdAt} />
+      <PostContent title={description} onDelete={onDelete} view={view} comment={comment} share={share} createdAt={createdAt} />
     </Card>
   );
 }
@@ -84,9 +91,10 @@ PostContent.propTypes = {
   share: PropTypes.number,
   title: PropTypes.string,
   view: PropTypes.number,
+  onDelete: PropTypes.func,
 };
 
-export function PostContent({ title, view, comment, share, createdAt, index }) {
+export function PostContent({ title, view, onDelete, onEdit, comment, share, createdAt, index }) {
   const isDesktop = useResponsive('up', 'md');
 
   const linkTo = PATH_DASHBOARD.blog.view(paramCase(title));
@@ -126,14 +134,14 @@ export function PostContent({ title, view, comment, share, createdAt, index }) {
           }),
         }}
       >
-        {}
+        {createdAt.toDate().toDateString()}
       </Typography>
 
-      
-        <TextMaxLine variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'} line={2} persistent>
-          {title}
-        </TextMaxLine>
-      
+
+      <TextMaxLine variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'} line={2} persistent>
+        {title}
+      </TextMaxLine>
+
 
       <Stack
         flexWrap="wrap"
@@ -148,7 +156,16 @@ export function PostContent({ title, view, comment, share, createdAt, index }) {
           }),
         }}
       >
-        
+        <IconButton onClick={() => {
+          onDelete();
+        }} aria-label="delete">
+          <DeleteIcon />
+        </IconButton>
+        <IconButton onClick={() => {
+          onEdit();
+        }} aria-label="delete">
+          <EditIcon />
+        </IconButton>
       </Stack>
     </CardContent>
   );

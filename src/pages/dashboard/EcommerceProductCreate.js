@@ -39,7 +39,7 @@ export default function EcommerceProductCreate() {
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
               name:"Trees",
-              href: PATH_DASHBOARD.eCommerce.root,
+              href: PATH_DASHBOARD.eCommerce.list,
             },
             { name: !isEdit ? 'New Tree' : name },
           ]}

@@ -17,8 +17,9 @@ import { SkeletonPostItem } from '../../components/skeleton';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import { BlogPostCard, BlogPostsSort, BlogPostsSearch } from '../../sections/@dashboard/blog';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from 'src/config';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -44,6 +45,16 @@ const applySort = (posts, sortBy) => {
 };
 
 export default function BlogPosts() {
+  
+  const { enqueueSnackbar } = useSnackbar();
+
+  const handleDelete = async (id) => {
+    const growerDoc = doc(db, "gallery", id)
+    await deleteDoc(growerDoc)
+    window.location.reload(false)
+    enqueueSnackbar('Detete success!');
+    
+  }
   const { themeStretch } = useSettings();
 
   const isMountedRef = useIsMountedRef();
@@ -105,7 +116,7 @@ export default function BlogPosts() {
           {(!posts.length ? [...Array(12)] : sortedPosts).map((post, index) =>
             post ? (
               <Grid key={post.id} item xs={12} sm={6} md={(index === 0 && 6) || 3}>
-                <BlogPostCard post={post} index={index} />
+                <BlogPostCard post={post} index={index} onDelete={() => handleDelete(post.id)} />
               </Grid>
             ) : (
               <SkeletonPostItem key={index} />

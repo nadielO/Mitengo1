@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { paramCase } from 'change-case';
 import { useParams, useLocation } from 'react-router-dom';
 // @mui
@@ -13,7 +13,9 @@ import useSettings from '../../hooks/useSettings';
 // components
 import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
-import ProductNewEditFormCopy from '../../sections/@dashboard/e-commerce/ProductNewEditFormCopy';
+import ProductNewEditForm from '../../sections/@dashboard/e-commerce/ProductNewEditForm';
+import { db } from 'src/config';
+import { doc, onSnapshot } from 'firebase/firestore';
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +26,19 @@ export default function EcommerceProductCreate() {
   const { name } = useParams();
   const { products } = useSelector((state) => state.product);
   const isEdit = pathname.includes('edit');
-  const currentProduct = products.find((product) => paramCase(product.name) === name);
+  
+  const growersCollectionRef = doc(db, "trees", name);
+
+  const [growers, setGrowers] = useState([]);
+
+  useEffect(() => {
+    const currentUser = onSnapshot(growersCollectionRef, (doc) => {
+      setGrowers(doc.data(), doc.id);
+    })
+    console.log(growers);
+  }, [])
+
+  const currentProduct = growers
 
   useEffect(() => {
     dispatch(getProducts());
@@ -39,13 +53,13 @@ export default function EcommerceProductCreate() {
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
               name:"Trees",
-              href: PATH_DASHBOARD.eCommerce.root,
+              href: PATH_DASHBOARD.eCommerce.list,
             },
             { name: !isEdit ? 'New Tree' : name },
           ]}
         />
 
-        <ProductNewEditFormCopy isEdit={isEdit} currentProduct={currentProduct} />
+        <ProductNewEditForm isEdit={isEdit} currentProduct={currentProduct} />
       </Container>
     </Page>
   );

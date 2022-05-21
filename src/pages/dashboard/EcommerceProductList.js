@@ -153,10 +153,10 @@ export default function EcommerceProductList() {
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
+              name: 'Trees',
+              href: PATH_DASHBOARD.eCommerce.list,
             },
-            { name: 'Product List' },
+            { name: 'Trees List' },
           ]}
           action={
             <Button

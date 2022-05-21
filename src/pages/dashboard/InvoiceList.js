@@ -21,6 +21,7 @@ import {
   TablePagination,
   FormControlLabel,
 } from '@mui/material';
+
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -42,7 +43,7 @@ import { InvoiceTableRow, InvoiceTableToolbar } from '../../sections/@dashboard/
 import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from 'src/config';
 import Router from 'src/routes';
-
+import { useSnackbar } from 'notistack';
 // ----------------------------------------------------------------------
 
 const SERVICE_OPTIONS = [
@@ -64,11 +65,13 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function InvoiceList() {
+
+  const navigate = useNavigate();
+
   const theme = useTheme();
 
   const { themeStretch } = useSettings();
 
-  const navigate = useNavigate();
 
   const {
     dense,
@@ -179,12 +182,14 @@ export default function InvoiceList() {
     };
     getGrowers();
   }, []);
-
+  const { enqueueSnackbar } = useSnackbar();
 
   const deleteGrower = async (id) => {
     const growerDoc = doc(db, "locations", id)
     await deleteDoc(growerDoc)
     deleteGrower()
+    window.location.reload(false)
+    enqueueSnackbar('Detete success!');
     
   }
 
