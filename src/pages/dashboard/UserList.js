@@ -211,13 +211,13 @@ export default function UserList() {
     (!dataFiltered.length && !!filterStatus);
 
   return (
-    <Page title="User: List">
+    <Page title="Growers: List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="User List"
+          heading="Growers List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.root },
+            { name: 'Growers', href: PATH_DASHBOARD.user.root },
             { name: 'List' },
           ]}
           action={
@@ -227,7 +227,7 @@ export default function UserList() {
               to={PATH_DASHBOARD.user.new}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              New User
+              New Grower
             </Button>
           }
         />
