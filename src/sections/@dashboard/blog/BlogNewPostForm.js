@@ -223,13 +223,6 @@ export default function BlogNewPostForm() {
                     labelPlacement="start"
                     sx={{ mb: 1, mx: 0, width: 1, justifyContent: 'space-between' }}
                   />
-
-                  <RHFSwitch
-                    name="comments"
-                    label="Enable comments"
-                    labelPlacement="start"
-                    sx={{ mx: 0, width: 1, justifyContent: 'space-between' }}
-                  />
                 </div>
 
                 <FormControl>
@@ -250,29 +243,6 @@ export default function BlogNewPostForm() {
                 ))}
               </Select>
             </FormControl>
-
-                <RHFTextField name="metaTitle" label="Meta title" />
-
-                <RHFTextField name="metaDescription" label="Meta description" fullWidth multiline rows={3} />
-
-                <Controller
-                  name="metaKeywords"
-                  control={control}
-                  render={({ field }) => (
-                    <Autocomplete
-                      multiple
-                      freeSolo
-                      onChange={(event, newValue) => field.onChange(newValue)}
-                      options={TAGS_OPTION.map((option) => option)}
-                      renderTags={(value, getTagProps) =>
-                        value.map((option, index) => (
-                          <Chip {...getTagProps({ index })} key={option} size="small" label={option} />
-                        ))
-                      }
-                      renderInput={(params) => <TextField label="Meta keywords" {...params} />}
-                    />
-                  )}
-                />
               </Stack>
             </Card>
 
