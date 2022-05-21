@@ -35,8 +35,9 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { TableEmptyRows, TableHeadCustom, TableNoData, TableSelectedActions } from '../../components/table';
 // sections
 import { UserTableToolbar, UserTableRow } from '../../sections/@dashboard/user/list';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
 import { db } from 'src/config';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -120,7 +121,7 @@ export default function UserList() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.user.edit(paramCase(id)));
+    navigate(PATH_DASHBOARD.user.edit(id));
   };
 
   const dataFiltered = applySortFilter({
@@ -162,6 +163,8 @@ export default function UserList() {
      
       const growersTableData = growersCollection.map(
         ({
+          phone,
+          id,
           fullName,
           treePrice,
           locationID,
@@ -170,6 +173,8 @@ export default function UserList() {
           growerImage,
           showInApp,
         }) => ({
+          phone,
+          id,
           fullName,
           treePrice,
           email,
@@ -189,8 +194,16 @@ export default function UserList() {
 
   }, []);
 
+  const { enqueueSnackbar } = useSnackbar();
 
   const denseHeight = dense ? 52 : 72;
+  const deleteGrower = async (id) => {
+    const growerDoc = doc(db, "growers", id)
+    await deleteDoc(growerDoc)
+    window.location.reload(false)
+    enqueueSnackbar('Post Deleted!');
+
+  }
 
   const isNotFound =
     (!dataFiltered.length && !!filterName) ||
@@ -266,14 +279,14 @@ export default function UserList() {
                 />
 
                 <TableBody>
-                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                  {tableData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                     <UserTableRow
                       key={row.id}
                       row={row}
                       selected={selected.includes(row.id)}
                       onSelectRow={() => onSelectRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
-                      onEditRow={() => handleEditRow(row.name)}
+                      onDeleteRow={() => deleteGrower(row.id)}
+                      onEditRow={() => handleEditRow(row.id)}
                     />
                   ))}
 

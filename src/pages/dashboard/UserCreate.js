@@ -13,6 +13,9 @@ import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import UserNewEditForm from '../../sections/@dashboard/user/UserNewEditForm';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from 'src/config';
+import { useEffect, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -21,11 +24,22 @@ export default function UserCreate() {
 
   const { pathname } = useLocation();
 
-  const { name = '' } = useParams();
+  const { name } = useParams();
 
   const isEdit = pathname.includes('edit');
+  const growersCollectionRef = doc(db, "growers", name);
 
-  const currentUser = _userList.find((user) => paramCase(user.name) === name);
+  const [growers, setGrowers] = useState([]);
+
+  useEffect(() => {
+    const currentUser = onSnapshot(growersCollectionRef, (doc) => {
+      setGrowers(doc.data(), doc.id);
+    })
+    console.log(growers);
+  }, [])
+
+  const currentUser = growers
+
 
   return (
     <Page title="Grower: Create a new grower">

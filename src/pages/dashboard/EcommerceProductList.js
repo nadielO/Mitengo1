@@ -1,6 +1,8 @@
 import { paramCase } from 'change-case';
 import { useState, useEffect } from 'react';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
+
 // @mui
 import {
   Box,
@@ -38,8 +40,9 @@ import {
 } from '../../components/table';
 // sections
 import { ProductTableRow, ProductTableToolbar } from '../../sections/@dashboard/e-commerce/product-list';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from 'src/config';
+import { reload } from 'firebase/auth';
 
 // ----------------------------------------------------------------------
 
@@ -54,6 +57,8 @@ const TABLE_HEAD = [
 // ----------------------------------------------------------------------
 
 export default function EcommerceProductList() {
+  const { enqueueSnackbar } = useSnackbar();
+
   const {
     dense,
     page,
@@ -91,12 +96,14 @@ export default function EcommerceProductList() {
   const growersCollectionRef = collection(db, "trees")
 
   useEffect(() => {
-    const getGrowers = async () => {
-      const data = await getDocs(growersCollectionRef);
-      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getGrowers();
-    console.log(tableData)
+    const data = []
+    onSnapshot(growersCollectionRef, (snapshot) => {
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id })
+      })
+      setTableData(data)
+      console.log(tableData)
+    })
   }, []);
 
   
@@ -111,6 +118,12 @@ export default function EcommerceProductList() {
     setSelected([]);
     setTableData(deleteRow);
   };
+  const deleteGrower = async (id) => {
+    const growerDoc = doc(db, "trees", id)
+    await deleteDoc(growerDoc)
+    enqueueSnackbar('Post Deleted!');
+    window.location.reload(false)
+  }
 
   const handleDeleteRows = (selected) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
@@ -209,7 +222,7 @@ export default function EcommerceProductList() {
                           row={row}
                           selected={selected.includes(row.id)}
                           onSelectRow={() => onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
+                          onDeleteRow={() => {deleteGrower(row.id)}}
                           onEditRow={() => handleEditRow(row.id)}
                         />
                       ) : (

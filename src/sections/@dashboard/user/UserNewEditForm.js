@@ -3,15 +3,19 @@ import * as Yup from 'yup';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
+
 // form
 import { getDownloadURL, ref, uploadBytesResumable } from "firebase/storage";
 import {
   addDoc,
   collection,
+  doc,
   getDoc,
   getDocs,
   onSnapshot,
   Timestamp,
+  updateDoc,
 } from "firebase/firestore";
 import { db, storage } from "src/config";
 
@@ -95,13 +99,14 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
   const [formData, setFormData] = useState({
     Image: "",
   });
+  const { name } = useParams();
 
   const [progress, setProgress] = useState(0);
   const handleImageChange = (e) => {
     setFormData({ ...formData, image: e.target.files[0] });
   };
 
-  
+
   const handleAddFields = () => {
     setInputFields([...inputFields, { treeId: '', quantityLeft: 0 }])
   }
@@ -125,6 +130,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
     const values = [...inputFields]
     values[index][event.target.name] = event.target.value
     setInputFields(values)
+
   }
 
   const navigate = useNavigate();
@@ -135,22 +141,22 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
     name: Yup.string().required('Name is required'),
     email: Yup.string().required('Email is required').email(),
     phoneNumber: Yup.string().required('Phone number is required'),
-    
+
     avatarUrl: Yup.mixed().test('required', 'Avatar is required', (value) => value !== ''),
   });
 
   const defaultValues = useMemo(
     () => ({
-      name: currentUser?.name || '',
+      name: currentUser?.fullName || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || '',
+      phoneNumber: currentUser?.phone || '',
       address: currentUser?.address || '',
-      country: currentUser?.country || '',
+      country: currentUser?.locationID || '',
       state: currentUser?.state || '',
       city: currentUser?.city || '',
       zipCode: currentUser?.zipCode || '',
-      avatarUrl: currentUser?.avatarUrl || '',
-      isVerified: currentUser?.isVerified || true,
+      avatarUrl: currentUser?.growerImage || '',
+      isVerified: currentUser?.showInApp || true,
       status: currentUser?.status,
       company: currentUser?.company || '',
       role: currentUser?.role || '',
@@ -188,58 +194,114 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
 
   const onSubmit = async () => {
 
-    const storageRef = ref(
-      storage,
-      `/growers/${Date.now()}${values.avatarUrl}`
-    );
-    const uploadImage = uploadBytesResumable(storageRef, values.avatarUrl);
+    if (isEdit) {
+      const userCollectionRef = doc(db, "growers", name)
+      const storageRef = ref(
+        storage,
+        `/growers/${Date.now()}${values.avatarUrl}`
+      );
+      const uploadImage = uploadBytesResumable(storageRef, values.avatarUrl);
 
-    uploadImage.on(
-      "state_changed",
-      (snapshot) => {
-        const progressPercent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(progressPercent);
-        console.log(progress)
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
-        
-        const growersTrees = {};
+      uploadImage.on(
+        "state_changed",
+        (snapshot) => {
+          const progressPercent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(progressPercent);
+          console.log(progress)
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => {
 
-        getDownloadURL(uploadImage.snapshot.ref).then((url) => {
-          const newImage = url;
-          const growerRef = collection(db, "growers");
-          addDoc(growerRef, {
-            fullName: values.name,
-            locationID: values.country,
-            showInApp: values.isVerified,
-            phone: values.phoneNumber,
-            email: values.email,
-            growerImage: newImage,
-            growersTrees: inputFields,
-            createdAt: Timestamp.now().toDate(),
-          })
-          .then(() => {
-            new Promise((resolve) => setTimeout(resolve, 500))
-              reset();
-              enqueueSnackbar('Post success!');
-              navigate(PATH_DASHBOARD.blog.posts);
-            
-          })
+          const growersTrees = {};
 
-          .catch((err) => {
-            alert(
-              "There was An Error When Add The Grower Check Your Internet Or Contact Sygen"
-            );
+          getDownloadURL(uploadImage.snapshot.ref).then((url) => {
+            const newImage = url;
+            updateDoc(userCollectionRef, {
+              fullName: values.name,
+              locationID: values.country,
+              showInApp: values.isVerified,
+              phone: values.phoneNumber,
+              email: values.email,
+              createdAt: Timestamp.now().toDate(),
+            })
+              .then(() => {
+                new Promise((resolve) => setTimeout(resolve, 500))
+                reset();
+                enqueueSnackbar('Updated success!');
+                navigate(PATH_DASHBOARD.user.list);
+
+              })
+
+              .catch((err) => {
+                alert(
+                  "There was An Error When Add The Grower Check Your Internet Or Contact Sygen"
+                );
+              });
           });
-        });
-      }
-    );
-    
+        }
+      );
+
+    }
+    if (!isEdit) {
+      const storageRef = ref(
+        storage,
+        `/growers/${Date.now()}${values.avatarUrl}`
+      );
+      const uploadImage = uploadBytesResumable(storageRef, values.avatarUrl);
+
+      uploadImage.on(
+        "state_changed",
+        (snapshot) => {
+          const progressPercent = Math.round(
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          setProgress(progressPercent);
+          console.log(progress)
+        },
+        (err) => {
+          console.log(err);
+        },
+        () => {
+
+          const growersTrees = {};
+
+          getDownloadURL(uploadImage.snapshot.ref).then((url) => {
+            const newImage = url;
+            const growerRef = collection(db, "growers");
+            addDoc(growerRef, {
+              fullName: values.name,
+              locationID: values.country,
+              showInApp: values.isVerified,
+              phone: values.phoneNumber,
+              email: values.email,
+              growerImage: newImage,
+              growersTrees: inputFields,
+              createdAt: Timestamp.now().toDate(),
+            })
+              .then(() => {
+                new Promise((resolve) => setTimeout(resolve, 500))
+                reset();
+                enqueueSnackbar('Post success!');
+                navigate(PATH_DASHBOARD.user.list);
+
+              })
+
+              .catch((err) => {
+                alert(
+                  "There was An Error When Add The Grower Check Your Internet Or Contact Sygen"
+                );
+              });
+          });
+        }
+      );
+    }
+
+
+
   };
 
   const handleDrop = useCallback(
@@ -296,35 +358,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
               />
             </Box>
 
-            {isEdit && (
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        {...field}
-                        checked={field.value !== 'active'}
-                        onChange={(event) => field.onChange(event.target.checked ? 'banned' : 'active')}
-                      />
-                    )}
-                  />
-                }
-                label={
-                  <>
-                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                      Banned
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Apply disable account
-                    </Typography>
-                  </>
-                }
-                sx={{ mx: 0, mb: 3, width: 1, justifyContent: 'space-between' }}
-              />
-            )}
+
 
             <RHFSwitch
               name="isVerified"
@@ -367,90 +401,92 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
                 ))}
               </RHFSelect>
 
-              <RHFTextField name="state" label="State/Region" />
-              
+
             </Box>
-            <Box sx={{ p: 3 }}>
-            <Typography variant="h6" sx={{ color: "text.disabled", mb: 3 }}>
-              Add Tree:
-            </Typography>
+            {!isEdit && (
+              <Box sx={{ p: 3 }}>
+              <Typography variant="h6" sx={{ color: "text.disabled", mb: 3 }}>
+                Add Tree:
+              </Typography>
 
-            <Stack
-              divider={<Divider flexItem sx={{ borderStyle: "dashed" }} />}
-              spacing={3}
-            >
-              {inputFields.map((inputField, index) => (
-                <Stack key={index} alignItems="flex-end" spacing={1.5}>
-                  <Stack
-                    direction={{ xs: "column", md: "row" }}
-                    spacing={2}
-                    sx={{ width: 1 }}
-                  >
-                    <FormControl>
-                      <InputLabel id="demo-simple-select-label">
-                        Trees
-                      </InputLabel>
-                      <Select
-                        name="treeId"
-                        labelId="demo-simple-select-label"
-                        id="demo-simple-select"
-                        value={inputField.treeId}
-                        label="Tree"
-                        onChange={event => handleChangeInput(index, event)}
-                      >
-                        {trees.map((tree) => (
-                          <MenuItem key={tree.id} value={tree.id}>
-                            {tree.treeName}
-                          </MenuItem>
-                        ))}
-                      </Select>
-                    </FormControl>
-
-                    <TextField
-                      type="number"
-                      name="quantityLeft"
-                      value={inputField.quantityLeft}
-                      onChange={event => handleChangeInput(index, event)}
-                      label="Quantity Left"
-                    />
-                  </Stack>
-
-                  <Button
-                    size="small"
-                    color="error"
-                    startIcon={<Iconify icon="eva:trash-2-outline" />}
-                    onClick={() => handleRemoveFields()}
-                  >
-                    Remove
-                  </Button>
-                </Stack>
-              ))}
-            </Stack>
-
-            <Divider sx={{ my: 3, borderStyle: "dashed" }} />
-
-            <Stack
-              spacing={2}
-              direction={{ xs: "column-reverse", md: "row" }}
-              alignItems={{ xs: "flex-start", md: "center" }}
-            >
-              <Button
-                size="small"
-                startIcon={<Iconify icon="eva:plus-fill" />}
-                sx={{ flexShrink: 0 }}
-                onClick={() => handleAddFields()}
+              <Stack
+                divider={<Divider flexItem sx={{ borderStyle: "dashed" }} />}
+                spacing={3}
               >
-                Add new detail
-              </Button>
+                {inputFields.map((inputField, index) => (
+                  <Stack key={index} alignItems="flex-end" spacing={1.5}>
+                    <Stack
+                      direction={{ xs: "column", md: "row" }}
+                      spacing={2}
+                      sx={{ width: 1 }}
+                    >
+                      <FormControl>
+                        <InputLabel id="demo-simple-select-label">
+                          Trees
+                        </InputLabel>
+                        <Select
+                          name="treeId"
+                          labelId="demo-simple-select-label"
+                          id="demo-simple-select"
+                          value={inputField.treeId}
+                          label="Tree"
+                          onChange={event => handleChangeInput(index, event)}
+                        >
+                          {trees.map((tree) => (
+                            <MenuItem key={tree.id} value={tree.id}>
+                              {tree.treeName}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      <TextField
+                        type="number"
+                        name="quantityLeft"
+                        value={inputField.quantityLeft}
+                        onChange={event => handleChangeInput(index, event)}
+                        label="Quantity Left"
+                      />
+                    </Stack>
+
+                    <Button
+                      size="small"
+                      color="error"
+                      startIcon={<Iconify icon="eva:trash-2-outline" />}
+                      onClick={() => handleRemoveFields()}
+                    >
+                      Remove
+                    </Button>
+                  </Stack>
+                ))}
+              </Stack>
+
+              <Divider sx={{ my: 3, borderStyle: "dashed" }} />
 
               <Stack
                 spacing={2}
-                justifyContent="flex-end"
-                direction={{ xs: "column", md: "row" }}
-                sx={{ width: 1 }}
-              ></Stack>
-            </Stack>
-          </Box>
+                direction={{ xs: "column-reverse", md: "row" }}
+                alignItems={{ xs: "flex-start", md: "center" }}
+              >
+                <Button
+                  size="small"
+                  startIcon={<Iconify icon="eva:plus-fill" />}
+                  sx={{ flexShrink: 0 }}
+                  onClick={() => handleAddFields()}
+                >
+                  Add new detail
+                </Button>
+
+                <Stack
+                  spacing={2}
+                  justifyContent="flex-end"
+                  direction={{ xs: "column", md: "row" }}
+                  sx={{ width: 1 }}
+                ></Stack>
+              </Stack>
+            </Box>
+            )}
+            
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>

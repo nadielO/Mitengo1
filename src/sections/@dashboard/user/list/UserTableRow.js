@@ -21,7 +21,7 @@ UserTableRow.propTypes = {
 export default function UserTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { name, location, showInApp, fullName, phone, growerImage, email, role, isVerified, status } = row;
+  const { name, location, showInApp, fullName, phone, growerImage, email, role, isVerified } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -65,13 +65,8 @@ export default function UserTableRow({ row, selected, onEditRow, onSelectRow, on
       </TableCell>
 
       <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={(status === 'banned' && 'error') || 'success'}
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {status}
-        </Label>
+          {phone}
+        
       </TableCell>
 
       <TableCell align="right">
