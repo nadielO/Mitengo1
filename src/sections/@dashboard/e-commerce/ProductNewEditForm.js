@@ -9,7 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { styled } from '@mui/material/styles';
 import { LoadingButton } from '@mui/lab';
-import { Card, Chip, Grid, Stack, TextField, Typography, Autocomplete, InputAdornment } from '@mui/material';
+import { Card, Chip, Grid, Stack, TextField, Typography, Autocomplete, InputAdornment, CircularProgress } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 import { useParams, useLocation } from 'react-router-dom';
@@ -314,10 +314,13 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
 
               <RHFSwitch name="taxes" label="Price includes taxes" />
             </Card>
-
-            <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
+            {progress === 0 ? <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
               {!isEdit ? 'Create Product' : 'Save Changes'}
-            </LoadingButton>
+            </LoadingButton> : (
+             <CircularProgress disableShrink />
+           
+          )}
+            
           </Stack>
         </Grid>
       </Grid>

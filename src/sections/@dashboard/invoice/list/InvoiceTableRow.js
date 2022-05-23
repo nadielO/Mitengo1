@@ -47,7 +47,7 @@ export default function InvoiceTableRow({ row, selected, onSelectRow, onViewRow,
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Avatar alt={district} color={createAvatar(district).color} sx={{ mr: 2 }}>
-          {createAvatar(district).district}
+          {createAvatar(district).name}
         </Avatar>
 
         <Stack>

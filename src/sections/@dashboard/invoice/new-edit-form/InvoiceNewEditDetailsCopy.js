@@ -12,7 +12,7 @@ import { RHFSelect, RHFTextField } from '../../../../components/hook-form';
 import { useEffect, useState } from 'react';
 import { collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from 'src/config';
-import { Navigate, useParams } from 'react-router';
+import { Navigate, useNavigate, useParams } from 'react-router';
 import { PATH_DASHBOARD } from 'src/routes/paths';
 import { useSnackbar } from 'notistack';
 
@@ -75,6 +75,8 @@ export default function InvoiceNewEditDetails({ isEdit, currentInvoice }) {
     remove(index);
   };
   const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
 
 
   console.log(region)
@@ -85,7 +87,7 @@ export default function InvoiceNewEditDetails({ isEdit, currentInvoice }) {
       district: locations,
     })
     enqueueSnackbar('Updated success!');
-    Navigate(PATH_DASHBOARD.invoice.list);
+    navigate(PATH_DASHBOARD.invoice.list);
   }
 
   

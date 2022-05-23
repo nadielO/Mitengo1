@@ -3,7 +3,7 @@ import { useFormContext, useFieldArray } from 'react-hook-form';
 // @mui
 import PropTypes from 'prop-types';
 
-import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material';
+import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem, CircularProgress } from '@mui/material';
 // utils
 import { fNumber } from '../../../../utils/formatNumber';
 // components
@@ -12,7 +12,9 @@ import { RHFSelect, RHFTextField } from '../../../../components/hook-form';
 import { useEffect, useState } from 'react';
 import { addDoc, collection, doc, getDoc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from 'src/config';
-import { useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
+import { PATH_DASHBOARD } from 'src/routes/paths';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -28,6 +30,10 @@ InvoiceNewEditDetails.propTypes = {
 
 
 export default function InvoiceNewEditDetails({ isEdit, currentInvoice }) {
+  const { enqueueSnackbar } = useSnackbar();
+  const navigate = useNavigate();
+
+
 
   const [locations, setLocations] = useState("");
   const [region, setRegion] = useState("");
@@ -81,6 +87,8 @@ export default function InvoiceNewEditDetails({ isEdit, currentInvoice }) {
       district : locations,
       region: region,
     })
+    enqueueSnackbar('Updated success!');
+    navigate(PATH_DASHBOARD.invoice.list);
     
   }
 
@@ -161,14 +169,18 @@ export default function InvoiceNewEditDetails({ isEdit, currentInvoice }) {
           </Stack>
       </Stack>
       <Stack justifyContent="flex-end" direction="row" spacing={2} sx={{ mt: 3 }}>
-
-        <Button
+      {handleUpdate ? <Button
           size="large"
           variant="contained"
           onClick={handleUpdate}
         >
           {isEdit ? 'Update' : 'Create'} & Send
-        </Button>
+        </Button> : (
+             <CircularProgress disableShrink />
+           
+          )}
+
+        
       </Stack>
 
     </Box>

@@ -38,6 +38,7 @@ import {
   FormControl,
   InputLabel,
   MenuItem,
+  CircularProgress,
 } from "@mui/material";
 // utils
 import { fData } from '../../../utils/formatNumber';
@@ -492,9 +493,14 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
             
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
-              <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+            {progress === 0 ? <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                 {!isEdit ? 'Create User' : 'Save Changes'}
-              </LoadingButton>
+              </LoadingButton> : (
+             <CircularProgress disableShrink />
+           
+          )}
+              
+              
             </Stack>
           </Card>
         </Grid>
