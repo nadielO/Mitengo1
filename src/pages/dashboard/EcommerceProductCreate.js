@@ -24,7 +24,7 @@ export default function EcommerceProductCreate() {
   const { name } = useParams();
   const { products } = useSelector((state) => state.product);
   const isEdit = pathname.includes('edit');
-  const currentProduct = "hi";
+  const currentProduct = products.find((product) => paramCase(product.name) === name);
 
   useEffect(() => {
     dispatch(getProducts());

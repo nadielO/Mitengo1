@@ -60,7 +60,7 @@ export const storage = getStorage(app)
 export const MAPBOX_API = process.env.REACT_APP_MAPBOX_API;
 
 // ROOT PATH AFTER LOGIN SUCCESSFUL
-export const PATH_AFTER_LOGIN = PATH_DASHBOARD.general.analytics; // as '/dashboard/app'
+export const PATH_AFTER_LOGIN = PATH_DASHBOARD.general.app; // as '/dashboard/app'
 
 // LAYOUT
 // ----------------------------------------------------------------------

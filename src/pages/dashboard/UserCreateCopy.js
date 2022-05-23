@@ -34,7 +34,7 @@ export default function UserCreateCopy() {
           heading={!isEdit ? 'Create a new user' : 'Edit user'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Grower', href: PATH_DASHBOARD.user.list },
+            { name: 'User', href: PATH_DASHBOARD.user.list },
             { name: !isEdit ? 'New user' : capitalCase(name) },
           ]}
         />

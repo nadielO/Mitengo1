@@ -223,6 +223,8 @@ export default function BlogNewPostForm() {
                     labelPlacement="start"
                     sx={{ mb: 1, mx: 0, width: 1, justifyContent: 'space-between' }}
                   />
+
+                 
                 </div>
 
                 <FormControl>
@@ -243,6 +245,8 @@ export default function BlogNewPostForm() {
                 ))}
               </Select>
             </FormControl>
+
+                
               </Stack>
             </Card>
 

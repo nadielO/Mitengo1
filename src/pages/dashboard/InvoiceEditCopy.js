@@ -23,10 +23,10 @@ export default function InvoiceEdit() {
   const currentInvoice = _invoices.find((invoice) => invoice.id === id);
 
   return (
-    <Page title="Location: Edit">
+    <Page title="Invoices: Edit">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Edit Loaction"
+          heading="Edit invoice"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             { name: 'Invoices', href: PATH_DASHBOARD.invoice.list },

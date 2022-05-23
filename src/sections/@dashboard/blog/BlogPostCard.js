@@ -3,7 +3,7 @@ import { paramCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
 import { styled, alpha } from '@mui/material/styles';
-import { Box, Link, Card, Avatar, Typography, CardContent, Stack } from '@mui/material';
+import { Box, Link, Card, Avatar, Typography, CardContent, Stack, Button } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // hooks
@@ -34,9 +34,10 @@ const OverlayStyle = styled('div')(({ theme }) => ({
 BlogPostCard.propTypes = {
   post: PropTypes.object.isRequired,
   index: PropTypes.number,
+  handleDelete: PropTypes.func,
 };
 
-export default function BlogPostCard({ post, index }) {
+export default function BlogPostCard({ post, index, handleDelete }) {
   const isDesktop = useResponsive('up', 'md');
 
   const { cover, title, view, comment, share, author, createdAt, galleryImage, description } = post;
@@ -46,7 +47,7 @@ export default function BlogPostCard({ post, index }) {
   if (isDesktop && latestPost) {
     return (
       <Card>
-        <PostContent title={description} view={view} comment={comment} share={share} createdAt={createdAt} index={index} />
+        <PostContent handleDelete={handleDelete} title={description} view={view} comment={comment} share={share} createdAt={createdAt} index={index} />
         <OverlayStyle />
         <Image alt="title" src={galleryImage} sx={{ height: 360 }} />
       </Card>
@@ -70,7 +71,7 @@ export default function BlogPostCard({ post, index }) {
         <Image alt="title" src={galleryImage} ratio="4/3" />
       </Box>
 
-      <PostContent title={description} view={view} comment={comment} share={share} createdAt={createdAt} />
+      <PostContent handleDelete={handleDelete} title={description} view={view} comment={comment} share={share} createdAt={createdAt} />
     </Card>
   );
 }
@@ -84,9 +85,10 @@ PostContent.propTypes = {
   share: PropTypes.number,
   title: PropTypes.string,
   view: PropTypes.number,
+  handleDelete: PropTypes.func
 };
 
-export function PostContent({ title, view, comment, share, createdAt, index }) {
+export function PostContent({ title, view, comment, share, createdAt, index, handleDelete }) {
   const isDesktop = useResponsive('up', 'md');
 
   const linkTo = PATH_DASHBOARD.blog.view(paramCase(title));
@@ -148,6 +150,7 @@ export function PostContent({ title, view, comment, share, createdAt, index }) {
           }),
         }}
       >
+        <Button onClick={() => {handleDelete()}}>delete</Button>
         
       </Stack>
     </CardContent>

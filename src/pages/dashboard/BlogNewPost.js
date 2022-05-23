@@ -16,13 +16,13 @@ export default function BlogNewPost() {
   const { themeStretch } = useSettings();
 
   return (
-    <Page title="Gallery: New Post">
+    <Page title="Blog: New Post">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Create a new post"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Gallery', href: PATH_DASHBOARD.blog.root },
+            { name: 'Blog', href: PATH_DASHBOARD.blog.root },
             { name: 'New Post' },
           ]}
         />

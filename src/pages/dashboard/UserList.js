@@ -197,6 +197,7 @@ export default function UserList() {
   const { enqueueSnackbar } = useSnackbar();
 
   const denseHeight = dense ? 52 : 72;
+  
   const deleteGrower = async (id) => {
     const growerDoc = doc(db, "growers", id)
     await deleteDoc(growerDoc)
@@ -211,13 +212,13 @@ export default function UserList() {
     (!dataFiltered.length && !!filterStatus);
 
   return (
-    <Page title="Growers: List">
+    <Page title="User: List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Growers List"
+          heading="User List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Growers', href: PATH_DASHBOARD.user.root },
+            { name: 'User', href: PATH_DASHBOARD.user.root },
             { name: 'List' },
           ]}
           action={
@@ -227,7 +228,7 @@ export default function UserList() {
               to={PATH_DASHBOARD.user.new}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
-              New Grower
+              New User
             </Button>
           }
         />

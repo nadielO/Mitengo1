@@ -60,8 +60,10 @@ UserNewEditForm.propTypes = {
 
 export default function UserNewEditForm({ isEdit, currentUser }) {
 
+  
+
   const [inputFields, setInputFields] = useState([
-    { treeId: "", quantityLeft: "" },
+    { treeId: "", quantityLeft: 0 },
   ]);
   const [growers, setGrowers] = useState([]);
   const [trees, setTrees] = useState([]);
@@ -108,7 +110,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
 
 
   const handleAddFields = () => {
-    setInputFields([...inputFields, { treeId: '', quantityLeft: 0 }])
+    setInputFields([...inputFields, { treeId: currentUser?.growersTrees[0] || "", quantityLeft: currentUser?.growersTrees[1] || 0 }])
   }
 
   const handleRemoveFields = (index) => {
@@ -133,6 +135,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
 
   }
 
+  console.log(currentUser)
   const navigate = useNavigate();
 
   const { enqueueSnackbar } = useSnackbar();
@@ -403,7 +406,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
 
 
             </Box>
-            {!isEdit && (
+            
               <Box sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ color: "text.disabled", mb: 3 }}>
                 Add Tree:
@@ -485,7 +488,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
                 ></Stack>
               </Stack>
             </Box>
-            )}
+            
             
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>

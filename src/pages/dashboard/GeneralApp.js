@@ -23,10 +23,50 @@ import {
 } from '../../sections/@dashboard/general/app';
 // assets
 import { SeoIllustration } from '../../assets';
+import { useEffect, useState } from 'react';
+import { collection, getDocs } from 'firebase/firestore';
+import { db } from 'src/config';
 
 // ----------------------------------------------------------------------
 
 export default function GeneralApp() {
+  const [numOfGrowers, setNumOfGrowers] = useState(0);
+  const [galleryImages, setGalleryImages] = useState([])
+  const [ numOfTrees, setNumOfTrees] = useState(0);
+  const [ numOfGallery, setNumOfGallery ] = useState(0);
+  const [ numOfUsers, setNumOfUsers] = useState(0);
+
+  useEffect(()=> {
+    const listOfUsers = JSON.parse(localStorage.getItem('growers'));
+    setNumOfGrowers(listOfUsers.length);
+  },[]);
+
+  const growersCollectionRef = collection(db, "gallery");
+
+  useEffect(() => {
+    const getGrowers = async () => {
+      const data = await getDocs(growersCollectionRef);
+      setGalleryImages(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getGrowers();
+  }, []);
+
+  console.log(galleryImages)
+
+
+  useEffect(()=> {
+    const listOfTrees = JSON.parse(localStorage.getItem('trees'));
+    setNumOfTrees(listOfTrees.length);
+  },[]);
+
+  useEffect(()=> {
+    const listOfTrees = JSON.parse(localStorage.getItem('gallary'));
+    setNumOfGallery(listOfTrees.length);
+  },[]);
+  useEffect(()=> {
+    const listOfTrees = JSON.parse(localStorage.getItem('users'));
+    setNumOfUsers(listOfTrees.length);
+  },[]);
   const { user } = useAuth();
 
   const theme = useTheme();
@@ -50,19 +90,19 @@ export default function GeneralApp() {
                   }}
                 />
               }
-              action={<Button variant="contained">Go Now</Button>}
+              
             />
           </Grid>
 
           <Grid item xs={12} md={4}>
-            <AppFeatured list={_appFeatured} />
+            <AppFeatured list={galleryImages} />
           </Grid>
 
           <Grid item xs={12} md={4}>
             <AppWidgetSummary
-              title="Total Active Users"
+              title="Growers"
               percent={2.6}
-              total={18765}
+              total={numOfGrowers}
               chartColor={theme.palette.primary.main}
               chartData={[5, 18, 12, 51, 68, 11, 39, 37, 27, 20]}
             />
@@ -70,9 +110,9 @@ export default function GeneralApp() {
 
           <Grid item xs={12} md={4}>
             <AppWidgetSummary
-              title="Total Installed"
+              title="Trees"
               percent={0.2}
-              total={4876}
+              total={numOfTrees}
               chartColor={theme.palette.chart.blue[0]}
               chartData={[20, 41, 63, 33, 28, 35, 50, 46, 11, 26]}
             />
@@ -80,9 +120,9 @@ export default function GeneralApp() {
 
           <Grid item xs={12} md={4}>
             <AppWidgetSummary
-              title="Total Downloads"
+              title="Users"
               percent={-0.1}
-              total={678}
+              total={numOfUsers}
               chartColor={theme.palette.chart.red[0]}
               chartData={[8, 9, 31, 8, 16, 37, 8, 33, 46, 31]}
             />
@@ -90,45 +130,22 @@ export default function GeneralApp() {
 
           <Grid item xs={12} md={6} lg={4}>
             <AppCurrentDownload
-              title="Current Download"
+              title="Total Made"
               chartColors={[
-                theme.palette.primary.lighter,
+                theme.palette.primary.main,
                 theme.palette.primary.light,
                 theme.palette.primary.main,
                 theme.palette.primary.dark,
               ]}
               chartData={[
-                { label: 'Mac', value: 12244 },
-                { label: 'Window', value: 53345 },
-                { label: 'iOS', value: 44313 },
-                { label: 'Android', value: 78343 },
+                { label: 'Donetion', value: 12244 },
+                { label: 'Sales', value: 53345 },
+                
               ]}
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={8}>
-            <AppAreaInstalled
-              title="Area Installed"
-              subheader="(+43%) than last year"
-              chartLabels={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']}
-              chartData={[
-                {
-                  year: '2019',
-                  data: [
-                    { name: 'Asia', data: [10, 41, 35, 51, 49, 62, 69, 91, 148] },
-                    { name: 'America', data: [10, 34, 13, 56, 77, 88, 99, 77, 45] },
-                  ],
-                },
-                {
-                  year: '2020',
-                  data: [
-                    { name: 'Asia', data: [148, 91, 69, 62, 49, 51, 35, 41, 10] },
-                    { name: 'America', data: [45, 77, 99, 88, 77, 56, 13, 34, 10] },
-                  ],
-                },
-              ]}
-            />
-          </Grid>
+         
 
           <Grid item xs={12} lg={8}>
             <AppNewInvoice
@@ -144,17 +161,7 @@ export default function GeneralApp() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppTopRelated title="Top Related Applications" list={_appRelated} />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppTopInstalledCountries title="Top Installed Countries" list={_appInstalled} />
-          </Grid>
-
-          <Grid item xs={12} md={6} lg={4}>
-            <AppTopAuthors title="Top Authors" list={_appAuthors} />
-          </Grid>
+          
 
           <Grid item xs={12} md={6} lg={4}>
             <Stack spacing={3}>

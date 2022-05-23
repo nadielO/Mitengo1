@@ -67,7 +67,7 @@ export default function InvoiceDetails({ invoice }) {
       <Card sx={{ pt: 5, px: 5 }}>
         <Grid container>
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
-            <Image disabledEffect visibleByDefault alt="logo" src="/logo/logo_full.svg" sx={{ maxWidth: 120 }} />
+            <Typography variant="h1">Sygen</Typography>
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
@@ -82,7 +82,7 @@ export default function InvoiceDetails({ invoice }) {
                 }
                 sx={{ textTransform: 'uppercase', mb: 1 }}
               >
-                {status}
+                Donated
               </Label>
 
               <Typography variant="h6">{`INV-${invoiceNumber}`}</Typography>
@@ -98,14 +98,7 @@ export default function InvoiceDetails({ invoice }) {
             <Typography variant="body2">Phone: {invoiceFrom.phone}</Typography>
           </Grid>
 
-          <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
-            <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Invoice to
-            </Typography>
-            <Typography variant="body2">{invoiceTo.name}</Typography>
-            <Typography variant="body2">{invoiceTo.address}</Typography>
-            <Typography variant="body2">Phone: {invoiceTo.phone}</Typography>
-          </Grid>
+          
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>

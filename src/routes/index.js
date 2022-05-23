@@ -88,9 +88,8 @@ export default function Router() {
           path: 'sales',
           children: [
             { element: <Navigate to="/dashboard/sales/list" replace />, index: true },
-            { path: 'shop', element: <EcommerceShop /> },
-            { path: 'product/:name', element: <EcommerceProductDetails /> },
-            { path: 'list', element: <EcommerceProductListCopy /> },
+            { path: 'list', element: <InvoiceListCopy /> },
+            
             
           ],
         },
@@ -116,6 +115,7 @@ export default function Router() {
             { path: 'new', element: <InvoiceCreate /> },
           ],
         },
+        
         {
           path: 'blog',
           children: [
@@ -168,7 +168,7 @@ export default function Router() {
       path: '/',
 
       children: [
-        { element: <Login />, index: true },
+        { element: <GuestGuard><Login /></GuestGuard>, index: true },
         { path: 'about-us', element: <About /> },
         { path: 'contact-us', element: <Contact /> },
         { path: 'faqs', element: <Faqs /> },
@@ -207,6 +207,8 @@ const EcommerceProductListCopy = Loadable(lazy(() => import('../pages/dashboard/
 
 // INVOICE
 const InvoiceList = Loadable(lazy(() => import('../pages/dashboard/InvoiceList')));
+const InvoiceListCopy = Loadable(lazy(() => import('../pages/dashboard/InvoiceListCopy')));
+
 const InvoiceDetails = Loadable(lazy(() => import('../pages/dashboard/InvoiceDetails')));
 const InvoiceCreate = Loadable(lazy(() => import('../pages/dashboard/InvoiceCreate')));
 const InvoiceEdit = Loadable(lazy(() => import('../pages/dashboard/InvoiceEdit')));

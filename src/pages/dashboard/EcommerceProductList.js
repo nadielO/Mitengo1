@@ -149,7 +149,7 @@ export default function EcommerceProductList() {
     <Page title="Ecommerce: Product List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Trees List"
+          heading="Product List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {

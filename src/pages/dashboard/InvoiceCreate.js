@@ -16,13 +16,13 @@ export default function InvoiceCreate() {
   const { themeStretch } = useSettings();
 
   return (
-    <Page title="location: Create a new Location">
+    <Page title="Invoices: Create a new invoice">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Create a new invoice"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Location', href: PATH_DASHBOARD.invoice.list },
+            { name: 'Invoices', href: PATH_DASHBOARD.invoice.list },
             { name: 'New invoice' },
           ]}
         />

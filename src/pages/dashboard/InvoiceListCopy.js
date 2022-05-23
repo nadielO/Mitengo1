@@ -1,5 +1,5 @@
 import sumBy from 'lodash/sumBy';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -21,7 +21,6 @@ import {
   TablePagination,
   FormControlLabel,
 } from '@mui/material';
-
 // routes
 import { PATH_DASHBOARD } from '../../routes/paths';
 // hooks
@@ -39,11 +38,8 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } from '../../components/table';
 // sections
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
-import { InvoiceTableRow, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
-import { db } from 'src/config';
-import Router from 'src/routes';
-import { useSnackbar } from 'notistack';
+import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
+
 // ----------------------------------------------------------------------
 
 const SERVICE_OPTIONS = [
@@ -57,21 +53,22 @@ const SERVICE_OPTIONS = [
 
 const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Client', align: 'left' },
-  { id: 'region', label: 'Create', align: 'left' },
- 
+  { id: 'createDate', label: 'Create', align: 'left' },
+  { id: 'dueDate', label: 'Due', align: 'left' },
+  { id: 'price', label: 'Amount', align: 'center', width: 140 },
+  { id: 'sent', label: 'Sent', align: 'center', width: 140 },
+  { id: 'status', label: 'Status', align: 'left' },
   { id: '' },
 ];
 
 // ----------------------------------------------------------------------
 
-export default function InvoiceList() {
-
-  const navigate = useNavigate();
-
+export default function InvoiceListCopy() {
   const theme = useTheme();
 
   const { themeStretch } = useSettings();
 
+  const navigate = useNavigate();
 
   const {
     dense,
@@ -92,7 +89,7 @@ export default function InvoiceList() {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'createDate' });
 
-  const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState(_invoices);
 
   const [filterName, setFilterName] = useState('');
 
@@ -114,8 +111,7 @@ export default function InvoiceList() {
   };
 
   const handleDeleteRow = (id) => {
-    const deleteRow = doc(db, "location", tableData.filter((row) => row.id !== id));
-    deleteDoc(deleteRow);
+    const deleteRow = tableData.filter((row) => row.id !== id);
     setSelected([]);
     setTableData(deleteRow);
   };
@@ -153,45 +149,23 @@ export default function InvoiceList() {
 
   const denseHeight = dense ? 56 : 76;
 
-  const getLengthByStatus = (region) => tableData.filter((item) => item.region === region).length;
+  const getLengthByStatus = (status) => tableData.filter((item) => item.status === status).length;
 
   const getTotalPriceByStatus = (status) =>
     sumBy(
       tableData.filter((item) => item.status === status),
-      'region'
+      'totalPrice'
     );
 
   const getPercentByStatus = (status) => (getLengthByStatus(status) / tableData.length) * 100;
 
   const TABS = [
     { value: 'all', label: 'All', color: 'info', count: tableData.length },
-    { value: 'Northern', label: 'Northern', color: 'success', count: getLengthByStatus('Northern') },
-    { value: 'Central', label: 'Central', color: 'warning', count: getLengthByStatus('Central') },
-    { value: 'Southern', label: 'Southern', color: 'info', count: getLengthByStatus('Southern') },
-
+    { value: 'paid', label: 'Paid', color: 'success', count: getLengthByStatus('paid') },
+    { value: 'unpaid', label: 'Unpaid', color: 'warning', count: getLengthByStatus('unpaid') },
+    { value: 'overdue', label: 'Overdue', color: 'error', count: getLengthByStatus('overdue') },
+    { value: 'draft', label: 'Draft', color: 'default', count: getLengthByStatus('draft') },
   ];
-
-  const [growers, setGrowers] = useState([]);
-  const growersCollectionRef = collection(db, "locations");
-
-
-  useEffect(() => {
-    const getGrowers = async () => {
-      const data = await getDocs(growersCollectionRef);
-      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getGrowers();
-  }, []);
-  const { enqueueSnackbar } = useSnackbar();
-
-  const deleteGrower = async (id) => {
-    const growerDoc = doc(db, "locations", id)
-    await deleteDoc(growerDoc)
-    deleteGrower()
-    window.location.reload(false)
-    enqueueSnackbar('Detete success!');
-    
-  }
 
   return (
     <Page title="Invoice: List">
@@ -215,29 +189,60 @@ export default function InvoiceList() {
           }
         />
 
+        <Card sx={{ mb: 5 }}>
+          <Scrollbar>
+            <Stack
+              direction="row"
+              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
+              sx={{ py: 2 }}
+            >
+              <InvoiceAnalytic
+                title="Total"
+                total={tableData.length}
+                percent={100}
+                price={sumBy(tableData, 'totalPrice')}
+                icon="ic:round-receipt"
+                color={theme.palette.info.main}
+              />
+              <InvoiceAnalytic
+                title="Paid"
+                total={getLengthByStatus('paid')}
+                percent={getPercentByStatus('paid')}
+                price={getTotalPriceByStatus('paid')}
+                icon="eva:checkmark-circle-2-fill"
+                color={theme.palette.success.main}
+              />
+              <InvoiceAnalytic
+                title="Unpaid"
+                total={getLengthByStatus('unpaid')}
+                percent={getPercentByStatus('unpaid')}
+                price={getTotalPriceByStatus('unpaid')}
+                icon="eva:clock-fill"
+                color={theme.palette.warning.main}
+              />
+              <InvoiceAnalytic
+                title="Overdue"
+                total={getLengthByStatus('overdue')}
+                percent={getPercentByStatus('overdue')}
+                price={getTotalPriceByStatus('overdue')}
+                icon="eva:bell-fill"
+                color={theme.palette.error.main}
+              />
+              <InvoiceAnalytic
+                title="Draft"
+                total={getLengthByStatus('draft')}
+                percent={getPercentByStatus('draft')}
+                price={getTotalPriceByStatus('draft')}
+                icon="eva:file-fill"
+                color={theme.palette.text.secondary}
+              />
+            </Stack>
+          </Scrollbar>
+        </Card>
 
         <Card>
-          <Tabs
-            allowScrollButtonsMobile
-            variant="scrollable"
-            scrollButtons="auto"
-            value={filterStatus}
-            onChange={onFilterStatus}
-            sx={{ px: 2, bgcolor: 'background.neutral' }}
-          >
-            {TABS.map((tab) => (
-              <Tab
-                disableRipple
-                key={tab.value}
-                value={tab.value}
-                icon={<Label color={tab.color}> {tab.count} </Label>}
-                label={tab.label}
-              />
-            ))}
-          </Tabs>
+          
 
-          <Divider />
-          <Divider />
           <Divider />
 
           
@@ -285,7 +290,7 @@ export default function InvoiceList() {
                 />
               )}
 
-              <Table size={dense ? 'medium' : 'large'}>
+              <Table size={dense ? 'small' : 'medium'}>
                 <TableHeadCustom
                   order={order}
                   orderBy={orderBy}
@@ -303,14 +308,14 @@ export default function InvoiceList() {
 
                 <TableBody>
                   {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                    <InvoiceTableRow
+                    <InvoiceTableRowCopy
                       key={row.id}
                       row={row}
                       selected={selected.includes(row.id)}
                       onSelectRow={() => onSelectRow(row.id)}
                       onViewRow={() => handleViewRow(row.id)}
                       onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => deleteGrower(row.id)}
+                      onDeleteRow={() => handleDeleteRow(row.id)}
                     />
                   ))}
 

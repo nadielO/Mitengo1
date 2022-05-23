@@ -96,13 +96,13 @@ CarouselItem.propTypes = {
   isActive: PropTypes.bool,
   item: PropTypes.shape({
     description: PropTypes.string,
-    image: PropTypes.string,
+    galleryImage: PropTypes.string,
     title: PropTypes.string,
   }),
 };
 
 function CarouselItem({ item, isActive }) {
-  const { image, title, description } = item;
+  const { galleryImage, title, description } = item;
 
   return (
     <Box sx={{ position: 'relative' }}>
@@ -121,7 +121,7 @@ function CarouselItem({ item, isActive }) {
       >
         <m.div variants={varFade().inRight}>
           <Typography variant="overline" component="div" sx={{ mb: 1, opacity: 0.48 }}>
-            Featured App
+            Gallery Posts
           </Typography>
         </m.div>
 
@@ -142,7 +142,7 @@ function CarouselItem({ item, isActive }) {
 
       <OverlayStyle />
 
-      <Image alt={title} src={image} sx={{ height: { xs: 280, xl: 320 } }} />
+      <Image alt={title} src={galleryImage} sx={{ height: { xs: 280, xl: 320 } }} />
     </Box>
   );
 }

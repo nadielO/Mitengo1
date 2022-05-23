@@ -33,7 +33,7 @@ const navConfig = [
     subheader: 'general',
     items: [
       
-      { title: 'analytics', path: PATH_DASHBOARD.general.analytics, icon: ICONS.analytics },
+      { title: 'dashboard', path: PATH_DASHBOARD.general.app, icon: ICONS.analytics },
       
     ],
   },
@@ -51,7 +51,6 @@ const navConfig = [
         children: [
           
           { title: 'list', path: PATH_DASHBOARD.user.list },
-          // { title: 'create', path: PATH_DASHBOARD.user.new },
           
         ],
       },
@@ -65,7 +64,6 @@ const navConfig = [
         children: [
          
           { title: 'list', path: PATH_DASHBOARD.eCommerce.list },
-          // { title: 'create', path: PATH_DASHBOARD.eCommerce.new },
           
         ],
       },
@@ -78,7 +76,6 @@ const navConfig = [
         icon: ICONS.invoice,
         children: [
           { title: 'list', path: PATH_DASHBOARD.invoice.list },
-          // { title: 'create', path: PATH_DASHBOARD.invoice.new },
         ],
       },
 
@@ -89,11 +86,9 @@ const navConfig = [
         icon: ICONS.blog,
         children: [
           { title: 'posts', path: PATH_DASHBOARD.blog.posts },
-          // { title: 'post', path: PATH_DASHBOARD.blog.demoView },
-          // { title: 'create', path: PATH_DASHBOARD.blog.new },
+          
         ],
       },
-      /*
       {
         title: 'Sales',
         path: PATH_DASHBOARD.sales.root,
@@ -104,7 +99,6 @@ const navConfig = [
           
         ],
       },
-      */
     ],
   },
 
