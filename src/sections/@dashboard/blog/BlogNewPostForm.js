@@ -1,5 +1,7 @@
 import * as Yup from 'yup';
 import { useCallback, useEffect, useState } from 'react';
+import CircularProgress from '@mui/material/CircularProgress';
+
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 // form
@@ -247,12 +249,16 @@ export default function BlogNewPostForm() {
             </Card>
 
             <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
+            {progress === 0 ? <LoadingButton fullWidth type="submit" variant="contained" size="large" loading={isSubmitting}>
+                Post
+              </LoadingButton> : (
+             <CircularProgress disableShrink />
+           
+          )}
               <Button fullWidth color="inherit" variant="outlined" size="large" onClick={handleOpenPreview}>
                 Preview
               </Button>
-              <LoadingButton fullWidth type="submit" variant="contained" size="large" loading={isSubmitting}>
-                Post
-              </LoadingButton>
+              
             </Stack>
           </Grid>
         </Grid>

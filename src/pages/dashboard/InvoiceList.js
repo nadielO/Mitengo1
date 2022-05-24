@@ -194,13 +194,13 @@ export default function InvoiceList() {
   }
 
   return (
-    <Page title="Invoice: List">
+    <Page title="Location: List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Invoice List"
+          heading="Location List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Invoices', href: PATH_DASHBOARD.invoice.root },
+            { name: 'Location', href: PATH_DASHBOARD.invoice.root },
             { name: 'List' },
           ]}
           action={

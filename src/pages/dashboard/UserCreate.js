@@ -48,8 +48,8 @@ export default function UserCreate() {
           heading={!isEdit ? 'Create a new grower' : 'Grower user'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'User', href: PATH_DASHBOARD.user.list },
-            { name: !isEdit ? 'New user' : capitalCase(name) },
+            { name: 'Grower', href: PATH_DASHBOARD.user.list },
+            { name: !isEdit ? 'New Grower' : capitalCase(name) },
           ]}
         />
 
