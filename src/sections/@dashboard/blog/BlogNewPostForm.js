@@ -76,7 +76,6 @@ export default function BlogNewPostForm() {
   const NewBlogSchema = Yup.object().shape({
     title: Yup.string().required('Title is required'),
     description: Yup.string().required('Description is required'),
-    content: Yup.string().min(1000).required('Content is required'),
     cover: Yup.mixed().required('Cover is required'),
   });
 
@@ -200,10 +199,7 @@ export default function BlogNewPostForm() {
 
                 <RHFTextField name="description" label="Description" multiline rows={3} />
 
-                <div>
-                  <LabelStyle>Content</LabelStyle>
-                  <RHFEditor simple name="content" />
-                </div>
+                
 
                 <div>
                   <LabelStyle>Cover</LabelStyle>
