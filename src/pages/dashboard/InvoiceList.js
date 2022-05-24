@@ -56,8 +56,8 @@ const SERVICE_OPTIONS = [
 ];
 
 const TABLE_HEAD = [
-  { id: 'invoiceNumber', label: 'Client', align: 'left' },
-  { id: 'region', label: 'Create', align: 'left' },
+  { id: 'invoiceNumber', label: 'district', align: 'left' },
+  { id: 'region', label: 'Region', align: 'left' },
  
   { id: '' },
 ];
