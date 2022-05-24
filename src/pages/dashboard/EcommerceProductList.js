@@ -47,7 +47,7 @@ import { reload } from 'firebase/auth';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Product', align: 'left' },
+  { id: 'name', label: 'Tree Name', align: 'left' },
   { id: 'createdAt', label: 'Create at', align: 'left' },
   { id: 'inventoryType', label: 'Status', align: 'center', width: 180 },
   { id: 'price', label: 'Price', align: 'right' },
@@ -146,7 +146,7 @@ export default function EcommerceProductList() {
   const isNotFound = (!dataFiltered.length && !!filterName) || (!isLoading && !dataFiltered.length);
 
   return (
-    <Page title="Ecommerce: Product List">
+    <Page title="Trees: Trees List">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
           heading="Trees List"
