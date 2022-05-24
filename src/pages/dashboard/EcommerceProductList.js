@@ -165,7 +165,7 @@ export default function EcommerceProductList() {
               component={RouterLink}
               to={PATH_DASHBOARD.eCommerce.new}
             >
-              New Product
+              New Tree
             </Button>
           }
         />
