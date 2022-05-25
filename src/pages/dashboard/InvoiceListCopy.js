@@ -1,5 +1,5 @@
 import sumBy from 'lodash/sumBy';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -39,6 +39,8 @@ import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } fr
 // sections
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
+import { db } from 'src/config';
+import { collection, getDocs } from 'firebase/firestore';
 
 // ----------------------------------------------------------------------
 
@@ -89,7 +91,7 @@ export default function InvoiceListCopy() {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'createDate' });
 
-  const [tableData, setTableData] = useState(_invoices);
+  const [tableData, setTableData] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
@@ -161,11 +163,20 @@ export default function InvoiceListCopy() {
 
   const TABS = [
     { value: 'all', label: 'All', color: 'info', count: tableData.length },
-    { value: 'paid', label: 'Paid', color: 'success', count: getLengthByStatus('paid') },
-    { value: 'unpaid', label: 'Unpaid', color: 'warning', count: getLengthByStatus('unpaid') },
-    { value: 'overdue', label: 'Overdue', color: 'error', count: getLengthByStatus('overdue') },
-    { value: 'draft', label: 'Draft', color: 'default', count: getLengthByStatus('draft') },
+    { value: 'sold', label: 'sold', color: 'success', count: getLengthByStatus('paid') },
+    { value: 'doneted', label: 'doneted', color: 'warning', count: getLengthByStatus('unpaid') },
+    
   ];
+  const growersCollectionRef = collection(db, "users");
+
+
+  useEffect(() => {
+    const getGrowers = async () => {
+      const data = await getDocs(growersCollectionRef);
+      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getGrowers();
+  }, []);
 
   return (
     <Page title="Invoice: List">
@@ -205,7 +216,7 @@ export default function InvoiceListCopy() {
                 color={theme.palette.info.main}
               />
               <InvoiceAnalytic
-                title="Paid"
+                title="Sold"
                 total={getLengthByStatus('paid')}
                 percent={getPercentByStatus('paid')}
                 price={getTotalPriceByStatus('paid')}
@@ -213,29 +224,14 @@ export default function InvoiceListCopy() {
                 color={theme.palette.success.main}
               />
               <InvoiceAnalytic
-                title="Unpaid"
+                title="Doneted"
                 total={getLengthByStatus('unpaid')}
                 percent={getPercentByStatus('unpaid')}
                 price={getTotalPriceByStatus('unpaid')}
                 icon="eva:clock-fill"
                 color={theme.palette.warning.main}
               />
-              <InvoiceAnalytic
-                title="Overdue"
-                total={getLengthByStatus('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalPriceByStatus('overdue')}
-                icon="eva:bell-fill"
-                color={theme.palette.error.main}
-              />
-              <InvoiceAnalytic
-                title="Draft"
-                total={getLengthByStatus('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalPriceByStatus('draft')}
-                icon="eva:file-fill"
-                color={theme.palette.text.secondary}
-              />
+              
             </Stack>
           </Scrollbar>
         </Card>

@@ -27,7 +27,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalPrice } = row;
+  const { sent, invoiceNumber, createdAt, dueDate, status, fullName, totalPrice } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -46,13 +46,13 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={invoiceTo.name} color={createAvatar(invoiceTo.name).color} sx={{ mr: 2 }}>
-          {createAvatar(invoiceTo.name).name}
+        <Avatar alt={fullName} color={createAvatar(fullName).color} sx={{ mr: 2 }}>
+          {createAvatar(fullName).name}
         </Avatar>
 
         <Stack>
           <Typography variant="subtitle2" noWrap>
-            {invoiceTo.name}
+            {fullName}
           </Typography>
 
           <Link noWrap variant="body2" onClick={onViewRow} sx={{ color: 'text.disabled', cursor: 'pointer' }}>
@@ -61,11 +61,11 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
         </Stack>
       </TableCell>
 
-      <TableCell align="left">{fDate(createDate)}</TableCell>
+      <TableCell align="left">{createdAt.toDate().toDateString()}</TableCell>
 
-      <TableCell align="left">{fDate(dueDate)}</TableCell>
+      <TableCell align="left"></TableCell>
 
-      <TableCell align="center">{fCurrency(totalPrice)}</TableCell>
+      <TableCell align="center"></TableCell>
 
       <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
         {sent}
