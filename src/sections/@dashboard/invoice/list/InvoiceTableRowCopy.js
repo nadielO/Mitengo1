@@ -27,7 +27,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, invoiceNumber, createdAt, dueDate, status, fullName, totalPrice } = row;
+  const { sent, invoiceNumber, createdAt, dueDate, status, fullName, totalAmount } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -65,7 +65,7 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
 
       <TableCell align="left"></TableCell>
 
-      <TableCell align="center"></TableCell>
+      <TableCell align="center">{fCurrency(totalAmount)}</TableCell>
 
       <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
         {sent}
