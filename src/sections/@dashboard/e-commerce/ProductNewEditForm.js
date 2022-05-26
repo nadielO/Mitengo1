@@ -272,11 +272,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
             <Stack spacing={3}>
               <RHFTextField name="name" label="Product Name" />
 
-              <div>
-                <LabelStyle>Description</LabelStyle>
-                <RHFEditor simple name="description" />
-              </div>
-
+              <RHFTextField name="description" label="Description" multiline/>
               {isEdit && (
                 <div>
                 <LabelStyle>Images</LabelStyle>
