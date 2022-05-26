@@ -95,7 +95,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
       price: currentProduct?.price || 0,
       priceSale: currentProduct?.treePrice || 0,
       tags: currentProduct?.tags || [TAGS_OPTION[0]],
-      inStock: currentProduct?.showInApp || false,
+      inStock: currentProduct?.showInApp || true,
       taxes: true,
       gender: currentProduct?.gender || GENDER_OPTION[2].value,
       category: currentProduct?.category || CATEGORY_OPTION[0].classify[1],
@@ -189,9 +189,9 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
     if (!isEdit) {
       const storageRef = ref(
         storage,
-        `/growers/${Date.now()}${values.avatarUrl}`
+        `/growers/${Date.now()}${values.cover}`
       );
-      const uploadImage = uploadBytesResumable(storageRef, values.avatarUrl);
+      const uploadImage = uploadBytesResumable(storageRef, values.cover);
 
       uploadImage.on(
         "state_changed",
@@ -211,7 +211,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
 
           getDownloadURL(uploadImage.snapshot.ref).then((url) => {
             const newImage = url;
-            const growerRef = collection(db, "growers");
+            const growerRef = collection(db, "trees");
             addDoc(growerRef, {
               treeName: values.name,
               treeDescription: values.description,
@@ -224,7 +224,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
                 new Promise((resolve) => setTimeout(resolve, 500))
                 reset();
                 enqueueSnackbar('Post success!');
-                navigate(PATH_DASHBOARD.user.list);
+                navigate(PATH_DASHBOARD.eCommerce.list);
 
               })
 
@@ -273,12 +273,12 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
               <RHFTextField name="name" label="Product Name" />
 
               <RHFTextField name="description" label="Description" multiline/>
-              {isEdit && (
+              
                 <div>
                 <LabelStyle>Images</LabelStyle>
                 <RHFUploadSingleFile name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
               </div>
-              )}
+            
               
             </Stack>
           </Card>
@@ -308,7 +308,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
                 />
               </Stack>
 
-              <RHFSwitch name="taxes" label="Price includes taxes" />
+              
             </Card>
             {progress === 0 ? <LoadingButton type="submit" variant="contained" size="large" loading={isSubmitting}>
               {!isEdit ? 'Create Product' : 'Save Changes'}
