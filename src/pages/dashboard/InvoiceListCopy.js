@@ -40,7 +40,8 @@ import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } fr
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
 import { db } from 'src/config';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -56,11 +57,9 @@ const SERVICE_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Client', align: 'left' },
   { id: 'createDate', label: 'Create', align: 'left' },
-  { id: 'dueDate', label: 'Due', align: 'left' },
-  { id: 'price', label: 'Amount', align: 'center', width: 140 },
-  { id: 'sent', label: 'Sent', align: 'center', width: 140 },
-  { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
+  { id: 'price', label: 'Amount', align: 'left' },
+  
+  { id: '', label: 'Action', align: 'left' },
 ];
 
 // ----------------------------------------------------------------------
@@ -111,12 +110,17 @@ export default function InvoiceListCopy() {
   const handleFilterService = (event) => {
     setFilterService(event.target.value);
   };
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
+
+  const deleteGrower = async (id) => {
+    const growerDoc = doc(db, "users", id)
+    await deleteDoc(growerDoc)
+    deleteGrower()
+    window.location.reload(false)
+    enqueueSnackbar('Detete success!');
+    
+  }
 
   const handleDeleteRows = (selected) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
@@ -177,6 +181,7 @@ export default function InvoiceListCopy() {
     };
     getGrowers();
   }, []);
+  
 
   return (
     <Page title="Invoice: List">
@@ -200,41 +205,7 @@ export default function InvoiceListCopy() {
           }
         />
 
-        <Card sx={{ mb: 5 }}>
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <InvoiceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, 'totalPrice')}
-                icon="ic:round-receipt"
-                color={theme.palette.info.main}
-              />
-              <InvoiceAnalytic
-                title="Sold"
-                total={getLengthByStatus('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalPriceByStatus('paid')}
-                icon="eva:checkmark-circle-2-fill"
-                color={theme.palette.success.main}
-              />
-              <InvoiceAnalytic
-                title="Doneted"
-                total={getLengthByStatus('unpaid')}
-                percent={getPercentByStatus('unpaid')}
-                price={getTotalPriceByStatus('unpaid')}
-                icon="eva:clock-fill"
-                color={theme.palette.warning.main}
-              />
-              
-            </Stack>
-          </Scrollbar>
-        </Card>
+        
 
         <Card>
           
@@ -311,7 +282,7 @@ export default function InvoiceListCopy() {
                       onSelectRow={() => onSelectRow(row.id)}
                       onViewRow={() => handleViewRow(row.id)}
                       onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onDeleteRow={() => deleteGrower(row.id)}
                     />
                   ))}
 

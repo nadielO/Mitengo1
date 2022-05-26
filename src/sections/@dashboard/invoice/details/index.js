@@ -53,6 +53,9 @@ export default function InvoiceDetails({ invoice }) {
     dueDate,
     discount,
     invoiceTo,
+    fullname,
+    email,
+    totalAmount,
     createDate,
     totalPrice,
     invoiceFrom,
@@ -93,9 +96,9 @@ export default function InvoiceDetails({ invoice }) {
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Invoice from
             </Typography>
-            <Typography variant="body2">{invoiceFrom.name}</Typography>
-            <Typography variant="body2">{invoiceFrom.address}</Typography>
-            <Typography variant="body2">Phone: {invoiceFrom.phone}</Typography>
+            <Typography variant="body2">{fullname}</Typography>
+            <Typography variant="body2">{}</Typography>
+            <Typography variant="body2">Phone: {}</Typography>
           </Grid>
 
           
@@ -104,14 +107,14 @@ export default function InvoiceDetails({ invoice }) {
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               date create
             </Typography>
-            <Typography variant="body2">{fDate(createDate)}</Typography>
+            <Typography variant="body2">{}</Typography>
           </Grid>
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Due date
             </Typography>
-            <Typography variant="body2">{fDate(dueDate)}</Typography>
+            <Typography variant="body2">{}</Typography>
           </Grid>
         </Grid>
 
