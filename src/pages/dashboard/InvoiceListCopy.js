@@ -1,5 +1,5 @@
 import sumBy from 'lodash/sumBy';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 // @mui
 import { useTheme } from '@mui/material/styles';
@@ -39,6 +39,9 @@ import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } fr
 // sections
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
+import { db } from 'src/config';
+import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -54,11 +57,9 @@ const SERVICE_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Client', align: 'left' },
   { id: 'createDate', label: 'Create', align: 'left' },
-  { id: 'dueDate', label: 'Due', align: 'left' },
-  { id: 'price', label: 'Amount', align: 'center', width: 140 },
-  { id: 'sent', label: 'Sent', align: 'center', width: 140 },
-  { id: 'status', label: 'Status', align: 'left' },
-  { id: '' },
+  { id: 'price', label: 'Amount', align: 'left' },
+  
+  { id: '', label: 'Action', align: 'left' },
 ];
 
 // ----------------------------------------------------------------------
@@ -89,7 +90,7 @@ export default function InvoiceListCopy() {
     onChangeRowsPerPage,
   } = useTable({ defaultOrderBy: 'createDate' });
 
-  const [tableData, setTableData] = useState(_invoices);
+  const [tableData, setTableData] = useState([]);
 
   const [filterName, setFilterName] = useState('');
 
@@ -109,12 +110,17 @@ export default function InvoiceListCopy() {
   const handleFilterService = (event) => {
     setFilterService(event.target.value);
   };
+  const { enqueueSnackbar } = useSnackbar();
 
-  const handleDeleteRow = (id) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
+
+  const deleteGrower = async (id) => {
+    const growerDoc = doc(db, "users", id)
+    await deleteDoc(growerDoc)
+    deleteGrower()
+    window.location.reload(false)
+    enqueueSnackbar('Detete success!');
+    
+  }
 
   const handleDeleteRows = (selected) => {
     const deleteRows = tableData.filter((row) => !selected.includes(row.id));
@@ -161,11 +167,21 @@ export default function InvoiceListCopy() {
 
   const TABS = [
     { value: 'all', label: 'All', color: 'info', count: tableData.length },
-    { value: 'paid', label: 'Paid', color: 'success', count: getLengthByStatus('paid') },
-    { value: 'unpaid', label: 'Unpaid', color: 'warning', count: getLengthByStatus('unpaid') },
-    { value: 'overdue', label: 'Overdue', color: 'error', count: getLengthByStatus('overdue') },
-    { value: 'draft', label: 'Draft', color: 'default', count: getLengthByStatus('draft') },
+    { value: 'sold', label: 'sold', color: 'success', count: getLengthByStatus('paid') },
+    { value: 'doneted', label: 'doneted', color: 'warning', count: getLengthByStatus('unpaid') },
+    
   ];
+  const growersCollectionRef = collection(db, "users");
+
+
+  useEffect(() => {
+    const getGrowers = async () => {
+      const data = await getDocs(growersCollectionRef);
+      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getGrowers();
+  }, []);
+  
 
   return (
     <Page title="Invoice: List">
@@ -177,68 +193,10 @@ export default function InvoiceListCopy() {
             { name: 'Invoices', href: PATH_DASHBOARD.invoice.root },
             { name: 'List' },
           ]}
-          action={
-            <Button
-              variant="contained"
-              component={RouterLink}
-              to={PATH_DASHBOARD.invoice.new}
-              startIcon={<Iconify icon={'eva:plus-fill'} />}
-            >
-              New Invoice
-            </Button>
-          }
+          
         />
 
-        <Card sx={{ mb: 5 }}>
-          <Scrollbar>
-            <Stack
-              direction="row"
-              divider={<Divider orientation="vertical" flexItem sx={{ borderStyle: 'dashed' }} />}
-              sx={{ py: 2 }}
-            >
-              <InvoiceAnalytic
-                title="Total"
-                total={tableData.length}
-                percent={100}
-                price={sumBy(tableData, 'totalPrice')}
-                icon="ic:round-receipt"
-                color={theme.palette.info.main}
-              />
-              <InvoiceAnalytic
-                title="Paid"
-                total={getLengthByStatus('paid')}
-                percent={getPercentByStatus('paid')}
-                price={getTotalPriceByStatus('paid')}
-                icon="eva:checkmark-circle-2-fill"
-                color={theme.palette.success.main}
-              />
-              <InvoiceAnalytic
-                title="Unpaid"
-                total={getLengthByStatus('unpaid')}
-                percent={getPercentByStatus('unpaid')}
-                price={getTotalPriceByStatus('unpaid')}
-                icon="eva:clock-fill"
-                color={theme.palette.warning.main}
-              />
-              <InvoiceAnalytic
-                title="Overdue"
-                total={getLengthByStatus('overdue')}
-                percent={getPercentByStatus('overdue')}
-                price={getTotalPriceByStatus('overdue')}
-                icon="eva:bell-fill"
-                color={theme.palette.error.main}
-              />
-              <InvoiceAnalytic
-                title="Draft"
-                total={getLengthByStatus('draft')}
-                percent={getPercentByStatus('draft')}
-                price={getTotalPriceByStatus('draft')}
-                icon="eva:file-fill"
-                color={theme.palette.text.secondary}
-              />
-            </Stack>
-          </Scrollbar>
-        </Card>
+        
 
         <Card>
           
@@ -315,7 +273,7 @@ export default function InvoiceListCopy() {
                       onSelectRow={() => onSelectRow(row.id)}
                       onViewRow={() => handleViewRow(row.id)}
                       onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => handleDeleteRow(row.id)}
+                      onDeleteRow={() => deleteGrower(row.id)}
                     />
                   ))}
 

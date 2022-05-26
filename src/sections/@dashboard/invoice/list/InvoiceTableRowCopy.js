@@ -27,7 +27,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, invoiceNumber, createDate, dueDate, status, invoiceTo, totalPrice } = row;
+  const { sent, id, invoiceNumber, createdAt, dueDate, status, fullName, totalAmount } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -46,47 +46,32 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={invoiceTo.name} color={createAvatar(invoiceTo.name).color} sx={{ mr: 2 }}>
-          {createAvatar(invoiceTo.name).name}
+        <Avatar alt={fullName} color={createAvatar(fullName).color} sx={{ mr: 2 }}>
+          {createAvatar(fullName).name}
         </Avatar>
 
         <Stack>
           <Typography variant="subtitle2" noWrap>
-            {invoiceTo.name}
+            {fullName}
           </Typography>
 
           <Link noWrap variant="body2" onClick={onViewRow} sx={{ color: 'text.disabled', cursor: 'pointer' }}>
-            {`INV-${invoiceNumber}`}
+            {`INV-${id}`}
           </Link>
         </Stack>
       </TableCell>
 
-      <TableCell align="left">{fDate(createDate)}</TableCell>
+      <TableCell align="left">{createdAt.toDate().toDateString()}</TableCell>
 
-      <TableCell align="left">{fDate(dueDate)}</TableCell>
+      
 
-      <TableCell align="center">{fCurrency(totalPrice)}</TableCell>
+      <TableCell align="left">{fCurrency(totalAmount)}</TableCell>
 
-      <TableCell align="center" sx={{ textTransform: 'capitalize' }}>
-        {sent}
-      </TableCell>
+      
+
+      
 
       <TableCell align="left">
-        <Label
-          variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
-          color={
-            (status === 'paid' && 'success') ||
-            (status === 'unpaid' && 'warning') ||
-            (status === 'overdue' && 'error') ||
-            'default'
-          }
-          sx={{ textTransform: 'capitalize' }}
-        >
-          {status}
-        </Label>
-      </TableCell>
-
-      <TableCell align="right">
         <TableMoreMenu
           open={openMenu}
           onOpen={handleOpenMenu}
@@ -104,25 +89,8 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
                 Delete
               </MenuItem>
 
-              <MenuItem
-                onClick={() => {
-                  onViewRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon={'eva:eye-fill'} />
-                View
-              </MenuItem>
-
-              <MenuItem
-                onClick={() => {
-                  onEditRow();
-                  handleCloseMenu();
-                }}
-              >
-                <Iconify icon={'eva:edit-fill'} />
-                Edit
-              </MenuItem>
+             
+              
             </>
           }
         />

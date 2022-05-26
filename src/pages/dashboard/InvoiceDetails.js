@@ -12,6 +12,9 @@ import Page from '../../components/Page';
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 // sections
 import Invoice from '../../sections/@dashboard/invoice/details';
+import { doc, onSnapshot } from 'firebase/firestore';
+import { db } from 'src/config';
+import { useEffect, useState } from 'react';
 
 // ----------------------------------------------------------------------
 
@@ -19,8 +22,16 @@ export default function InvoiceDetails() {
   const { themeStretch } = useSettings();
 
   const { id } = useParams();
+  const growersCollectionRef = doc(db, "users", id);
+  const [growers, setGrowers] = useState([]);
+  useEffect(() => {
+    const currentUser = onSnapshot(growersCollectionRef, (doc) => {
+      setGrowers(doc.data(), doc.id);
+    })
+    console.log(growers);
+  }, [])
 
-  const invoice = _invoices.find((invoice) => invoice.id === id);
+  const invoice = growers;
 
   return (
     <Page title="Invoice: View">

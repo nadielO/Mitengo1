@@ -24,7 +24,7 @@ import {
 // assets
 import { SeoIllustration } from '../../assets';
 import { useEffect, useState } from 'react';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, getDocs, onSnapshot } from 'firebase/firestore';
 import { db } from 'src/config';
 
 // ----------------------------------------------------------------------
@@ -32,14 +32,16 @@ import { db } from 'src/config';
 export default function GeneralApp() {
   const [numOfGrowers, setNumOfGrowers] = useState(0);
   const [galleryImages, setGalleryImages] = useState([])
-  const [ numOfTrees, setNumOfTrees] = useState(0);
-  const [ numOfGallery, setNumOfGallery ] = useState(0);
-  const [ numOfUsers, setNumOfUsers] = useState(0);
+  const [numOfTrees, setNumOfTrees] = useState(0);
+  const [numOfGallery, setNumOfGallery] = useState(0);
+  const [numOfUsers, setNumOfUsers] = useState(0);
+  const [donetionValue, setDonetionValue] = useState([]);
+  const [newVData, setNewVData] = useState([]);
 
-  useEffect(()=> {
+  useEffect(() => {
     const listOfUsers = JSON.parse(localStorage.getItem('growers'));
     setNumOfGrowers(listOfUsers.length);
-  },[]);
+  }, []);
 
   const growersCollectionRef = collection(db, "gallery");
 
@@ -51,25 +53,30 @@ export default function GeneralApp() {
     getGrowers();
   }, []);
 
-  console.log(galleryImages)
 
 
-  useEffect(()=> {
+  useEffect(() => {
     const listOfTrees = JSON.parse(localStorage.getItem('trees'));
     setNumOfTrees(listOfTrees.length);
-  },[]);
+  }, []);
 
-  useEffect(()=> {
+  useEffect(() => {
     const listOfTrees = JSON.parse(localStorage.getItem('gallary'));
     setNumOfGallery(listOfTrees.length);
-  },[]);
-  useEffect(()=> {
+  }, []);
+  useEffect(() => {
     const listOfTrees = JSON.parse(localStorage.getItem('users'));
     setNumOfUsers(listOfTrees.length);
-  },[]);
-  const { user } = useAuth();
 
+  }, []);
+  const UsersCollectionRef = collection(db, "users")
+
+  
+
+  
+  const { user } = useAuth();
   const theme = useTheme();
+
 
   const { themeStretch } = useSettings();
 
@@ -79,8 +86,8 @@ export default function GeneralApp() {
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <AppWelcome
-              title={`Welcome back! \n ${user?.displayName}`}
-              description="If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything."
+              title={`Welcome back! \n ${user?.email}`}
+              description=""
               img={
                 <SeoIllustration
                   sx={{
@@ -90,7 +97,7 @@ export default function GeneralApp() {
                   }}
                 />
               }
-              
+
             />
           </Grid>
 
@@ -128,47 +135,11 @@ export default function GeneralApp() {
             />
           </Grid>
 
-          <Grid item xs={12} md={6} lg={4}>
-            <AppCurrentDownload
-              title="Total Made"
-              chartColors={[
-                theme.palette.primary.main,
-                theme.palette.primary.light,
-                theme.palette.primary.main,
-                theme.palette.primary.dark,
-              ]}
-              chartData={[
-                { label: 'Donetion', value: 12244 },
-                { label: 'Sales', value: 53345 },
-                
-              ]}
-            />
-          </Grid>
-
-         
-
-          <Grid item xs={12} lg={8}>
-            <AppNewInvoice
-              title="New Invoice"
-              tableData={_appInvoices}
-              tableLabels={[
-                { id: 'id', label: 'Invoice ID' },
-                { id: 'category', label: 'Category' },
-                { id: 'price', label: 'Price' },
-                { id: 'status', label: 'Status' },
-                { id: '' },
-              ]}
-            />
-          </Grid>
-
           
 
-          <Grid item xs={12} md={6} lg={4}>
-            <Stack spacing={3}>
-              <AppWidget title="Conversion" total={38566} icon={'eva:person-fill'} chartData={48} />
-              <AppWidget title="Applications" total={55566} icon={'eva:email-fill'} color="warning" chartData={75} />
-            </Stack>
-          </Grid>
+
+
+          
         </Grid>
       </Container>
     </Page>
