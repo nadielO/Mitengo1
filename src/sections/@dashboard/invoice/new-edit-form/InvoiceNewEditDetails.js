@@ -21,7 +21,7 @@ import { useSnackbar } from 'notistack';
 const SERVICE_OPTIONS = [
   'Northern',
   'Southern',
-  'Cenral',
+  'Central',
 ];
 InvoiceNewEditDetails.propTypes = {
   isEdit: PropTypes.bool,
