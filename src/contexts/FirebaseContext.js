@@ -65,7 +65,7 @@ function AuthProvider({ children }) {
     () =>
       onAuthStateChanged(AUTH, async (user) => {
         if (user) {
-          const userRef = doc(DB, 'users', user.uid);
+          const userRef = doc(DB, 'admins', user.uid);
 
           const docSnap = await getDoc(userRef);
 
@@ -91,7 +91,7 @@ function AuthProvider({ children }) {
 
   const register = (email, password, firstName, lastName) =>
     createUserWithEmailAndPassword(AUTH, email, password).then(async (res) => {
-      const userRef = doc(collection(DB, 'users'), res.user?.uid);
+      const userRef = doc(collection(DB, 'admins'), res.user?.uid);
 
       await setDoc(userRef, {
         uid: res.user?.uid,
