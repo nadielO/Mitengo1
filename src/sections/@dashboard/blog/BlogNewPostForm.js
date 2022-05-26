@@ -255,9 +255,7 @@ export default function BlogNewPostForm() {
              <CircularProgress disableShrink />
            
           )}
-              <Button fullWidth color="inherit" variant="outlined" size="large" onClick={handleOpenPreview}>
-                Preview
-              </Button>
+              
               
             </Stack>
           </Grid>
