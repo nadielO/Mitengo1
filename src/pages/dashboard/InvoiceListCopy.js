@@ -58,6 +58,8 @@ const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Client', align: 'left' },
   { id: 'createDate', label: 'Create', align: 'left' },
   { id: 'price', label: 'Amount', align: 'left' },
+  { id: 'status', label: 'Status', align: 'left' },
+  { id: 'method', label: 'Payment Method', align: 'left' },
   
   { id: '', label: 'Action', align: 'left' },
 ];
@@ -171,16 +173,51 @@ export default function InvoiceListCopy() {
     { value: 'doneted', label: 'doneted', color: 'warning', count: getLengthByStatus('unpaid') },
     
   ];
-  const growersCollectionRef = collection(db, "users");
-
+  const growersCollectionRef = collection(db, "logs");
+  const locationsCollectionRef = collection(db, "users");
 
   useEffect(() => {
-    const getGrowers = async () => {
-      const data = await getDocs(growersCollectionRef);
-      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
-    };
-    getGrowers();
+    const createGrowerList = async () => {
+      //fetch growers from firebase store
+      const growersCollection = (await getDocs(growersCollectionRef)).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const locationsCollection = (
+        await getDocs(locationsCollectionRef)
+      ).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+     
+      const growersTableData = growersCollection.map(
+        ({
+          totalCost,
+          growerName,
+          userId,
+          purchaseDate,
+          status,
+          treeLocation,
+          treeQuantity,
+          id,
+          paymentMethod,
+        }) => ({
+          totalCost,
+          paymentMethod,
+          growerName,
+          purchaseDate,
+          status,
+          treeLocation,
+          treeQuantity,
+          id,
+          user: locationsCollection.find(
+            (user) => user.id === userId
+          )?.fullName
+        })
+      );
+      setTableData(growersTableData);
+    }
+
+    createGrowerList();
+
   }, []);
+
+
+  
   
 
   return (

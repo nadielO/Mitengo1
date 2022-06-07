@@ -22,16 +22,21 @@ export default function InvoiceDetails() {
   const { themeStretch } = useSettings();
 
   const { id } = useParams();
-  const growersCollectionRef = doc(db, "users", id);
+  const growersCollectionRef = doc(db, "logs", id);
   const [growers, setGrowers] = useState([]);
+  const [logs, setLogs] = useState([]);
   useEffect(() => {
     const currentUser = onSnapshot(growersCollectionRef, (doc) => {
       setGrowers(doc.data(), doc.id);
     })
     console.log(growers);
+    
   }, [])
 
+
   const invoice = growers;
+  
+  
 
   return (
     <Page title="Invoice: View">
@@ -48,7 +53,7 @@ export default function InvoiceDetails() {
           ]}
         />
 
-        <Invoice invoice={invoice} />
+        <Invoice invoice={growers} />
       </Container>
     </Page>
   );
