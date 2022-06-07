@@ -72,7 +72,7 @@ export default function Router() {
         { path: 'booking', element: <GeneralBooking /> },
 
         {
-          path: 'e-commerce',
+          path: 'trees',
           children: [
             { element: <Navigate to="/dashboard/e-commerce/shop" replace />, index: true },
             { path: 'shop', element: <EcommerceShop /> },
@@ -94,7 +94,7 @@ export default function Router() {
           ],
         },
         {
-          path: 'user',
+          path: 'growers',
           children: [
             { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
             { path: 'profile', element: <UserProfile /> },
@@ -106,7 +106,7 @@ export default function Router() {
           ],
         },
         {
-          path: 'invoice',
+          path: 'locations',
           children: [
             { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
             { path: 'list', element: <InvoiceList /> },
@@ -117,7 +117,7 @@ export default function Router() {
         },
         
         {
-          path: 'blog',
+          path: 'gallery',
           children: [
             { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
             { path: 'posts', element: <BlogPosts /> },

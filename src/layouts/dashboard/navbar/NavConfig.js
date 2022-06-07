@@ -46,11 +46,11 @@ const navConfig = [
       // USER
       {
         title: 'Growers',
-        path: PATH_DASHBOARD.user.root,
+        path: PATH_DASHBOARD.growers.root,
         icon: ICONS.user,
         children: [
           
-          { title: 'list', path: PATH_DASHBOARD.user.list },
+          { title: 'list', path: PATH_DASHBOARD.growers.list },
           
         ],
       },
@@ -59,11 +59,11 @@ const navConfig = [
       
       {
         title: 'Trees',
-        path: PATH_DASHBOARD.eCommerce.root,
+        path: PATH_DASHBOARD.trees.root,
         icon: ICONS.cart,
         children: [
          
-          { title: 'list', path: PATH_DASHBOARD.eCommerce.list },
+          { title: 'list', path: PATH_DASHBOARD.trees.list },
           
         ],
       },
@@ -72,20 +72,20 @@ const navConfig = [
       // INVOICE
       {
         title: 'Locations',
-        path: PATH_DASHBOARD.invoice.root,
+        path: PATH_DASHBOARD.locations.root,
         icon: ICONS.invoice,
         children: [
-          { title: 'list', path: PATH_DASHBOARD.invoice.list },
+          { title: 'list', path: PATH_DASHBOARD.locations.list },
         ],
       },
 
       // BLOG
       {
         title: 'Gallery',
-        path: PATH_DASHBOARD.blog.root,
+        path: PATH_DASHBOARD.gallery.root,
         icon: ICONS.blog,
         children: [
-          { title: 'posts', path: PATH_DASHBOARD.blog.posts },
+          { title: 'posts', path: PATH_DASHBOARD.gallery.posts },
           
         ],
       },
