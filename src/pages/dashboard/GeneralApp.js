@@ -35,6 +35,7 @@ export default function GeneralApp() {
   const [numOfTrees, setNumOfTrees] = useState(0);
   const [numOfGallery, setNumOfGallery] = useState(0);
   const [numOfUsers, setNumOfUsers] = useState(0);
+  const [ logs, setLogs ] = useState([]);
   const [donetionValue, setDonetionValue] = useState([]);
   const [newVData, setNewVData] = useState([]);
 
@@ -52,6 +53,17 @@ export default function GeneralApp() {
     };
     getGrowers();
   }, []);
+
+  const growersCollectionRef1 = collection(db, "logs");
+
+  useEffect(() => {
+    const getGrowers = async () => {
+      const data = await getDocs(growersCollectionRef1);
+      setLogs(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getGrowers();
+  }, []);
+  
 
 
 
@@ -79,6 +91,22 @@ export default function GeneralApp() {
 
 
   const { themeStretch } = useSettings();
+
+  let sum = 0
+  logs.forEach(function(value, index, arry){
+    if (value.status === "Sold"){
+       sum += value.totalCost;
+    }
+  });
+
+   let Donetions = 0
+   logs.forEach(function(value, index, arry){
+     if (value.status === "Donated"){
+        Donetions += value.totalCost;
+     }
+   });
+   
+   console.log(Donetions);
 
   return (
     <Page title="General: App">
@@ -132,6 +160,23 @@ export default function GeneralApp() {
               total={numOfUsers}
               chartColor={theme.palette.chart.red[0]}
               chartData={[8, 9, 31, 8, 16, 37, 8, 33, 46, 31]}
+            />
+          </Grid>
+
+          <Grid item xs={12} md={6} lg={4}>
+            <AppCurrentDownload
+              title="Total Made"
+              chartColors={[
+                theme.palette.primary.main,
+                theme.palette.primary.light,
+                theme.palette.primary.main,
+                theme.palette.primary.dark,
+              ]}
+              chartData={[
+                { label: 'Sales', value: sum },
+                { label: 'Donetion', value: Donetions },
+                
+              ]}
             />
           </Grid>
 
