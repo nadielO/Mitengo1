@@ -126,6 +126,60 @@ export default function Router() {
           ],
         },
         {
+          path: 'e-commerce',
+          children: [
+            { element: <Navigate to="/dashboard/e-commerce/shop" replace />, index: true },
+            { path: 'shop', element: <EcommerceShop /> },
+            { path: 'product/:name', element: <EcommerceProductDetails /> },
+            { path: 'list', element: <EcommerceProductList /> },
+            { path: 'product/new', element: <EcommerceProductCreate /> },
+            { path: 'product/:name/edit', element: <EcommerceProductCreateCopy /> },
+            { path: 'checkout', element: <EcommerceCheckout /> },
+          ],
+        },
+
+        {
+          path: 'sales',
+          children: [
+            { element: <Navigate to="/dashboard/sales/list" replace />, index: true },
+            { path: 'list', element: <InvoiceListCopy /> },
+            
+            
+          ],
+        },
+        {
+          path: 'user',
+          children: [
+            { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
+            { path: 'profile', element: <UserProfile /> },
+            { path: 'cards', element: <UserCards /> },
+            { path: 'list', element: <UserList /> },
+            { path: 'new', element: <UserCreateCopy /> },
+            { path: ':name/edit', element: <UserCreate /> },
+            { path: 'account', element: <UserAccount /> },
+          ],
+        },
+        {
+          path: 'invoice',
+          children: [
+            { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
+            { path: 'list', element: <InvoiceList /> },
+            { path: ':id', element: <InvoiceDetails /> },
+            { path: ':id/edit', element: <InvoiceEdit /> },
+            { path: 'new', element: <InvoiceCreate /> },
+          ],
+        },
+        
+        {
+          path: 'blog',
+          children: [
+            { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
+            { path: 'posts', element: <BlogPosts /> },
+            { path: 'post/:title', element: <BlogPost /> },
+            { path: 'new', element: <BlogNewPost /> },
+          ],
+        },
+        {
           path: 'mail',
           children: [
             { element: <Navigate to="/dashboard/mail/all" replace />, index: true },
