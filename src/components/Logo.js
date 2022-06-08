@@ -21,14 +21,9 @@ export default function Logo({ disabledLink = false, sx }) {
   const PRIMARY_DARK = theme.palette.primary.dark;
 
   // OR
-  // const logo = '/logo/logo_single.svg';
+  const logo = <Box component="img" src="/logo/sygenlogo_big.png" sx={{ width: 100, height: 40, ...sx }} />
 
-  const logo = (
-    <Box sx={{ width: 40, height: 40, ...sx }}>
-      
-    </Box>
-  );
-
+  
   if (disabledLink) {
     return <>{logo}</>;
   }
