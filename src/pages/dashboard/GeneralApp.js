@@ -174,7 +174,7 @@ export default function GeneralApp() {
               ]}
               chartData={[
                 { label: 'Sales', value: sum },
-                { label: 'Donetion', value: Donetions },
+                { label: 'Donation', value: Donetions },
                 
               ]}
             />
