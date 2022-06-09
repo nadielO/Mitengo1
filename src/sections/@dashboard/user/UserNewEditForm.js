@@ -19,7 +19,7 @@ import {
 } from "firebase/firestore";
 import { db, storage } from "src/config";
 
-import { useForm, Controller } from 'react-hook-form';
+import { useForm, Controller, useFieldArray } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
 import { LoadingButton } from '@mui/lab';
@@ -39,9 +39,10 @@ import {
   InputLabel,
   MenuItem,
   CircularProgress,
+  InputAdornment,
 } from "@mui/material";
 // utils
-import { fData } from '../../../utils/formatNumber';
+import { fData, fNumber } from '../../../utils/formatNumber';
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 
@@ -59,6 +60,13 @@ UserNewEditForm.propTypes = {
   currentUser: PropTypes.object,
 };
 
+const SERVICE_OPTIONS = [
+  'full stack development',
+  'backend development',
+  'ui design',
+  'ui/ux design',
+  'front end development',
+];
 export default function UserNewEditForm({ isEdit, currentUser }) {
 
   
@@ -164,6 +172,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
       status: currentUser?.status,
       company: currentUser?.company || '',
       role: currentUser?.role || '',
+      items: currentUser?.growersTrees || [{ quantityLeft: 0, treeId: '' }],
     }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [currentUser]
@@ -184,6 +193,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
   } = methods;
 
   const values = watch();
+  console.log(values.items)
 
   useEffect(() => {
     if (isEdit && currentUser) {
@@ -229,15 +239,15 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
               locationID: values.country,
               showInApp: values.isVerified,
               phone: values.phoneNumber,
-              growerImage: newImage,
               email: values.email,
+              growersTrees: values.items,
               createdAt: Timestamp.now().toDate(),
             })
               .then(() => {
                 new Promise((resolve) => setTimeout(resolve, 500))
                 reset();
                 enqueueSnackbar('Updated success!');
-                navigate(PATH_DASHBOARD.user.list);
+                navigate(PATH_DASHBOARD.growers.list);
 
               })
 
@@ -291,7 +301,7 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
                 new Promise((resolve) => setTimeout(resolve, 500))
                 reset();
                 enqueueSnackbar('Post success!');
-                navigate(PATH_DASHBOARD.user.list);
+                navigate(PATH_DASHBOARD.growers.list);
 
               })
 
@@ -324,6 +334,29 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
     },
     [setValue]
   );
+
+
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'items',
+  });
+
+  const handleAdd = () => {
+    append({
+      title: '',
+      description: '',
+      service: '',
+      quantity: '',
+      price: '',
+      total: '',
+    });
+  };
+
+  const handleRemove = (index) => {
+    remove(index);
+  };
+
 
   return (
     <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -408,8 +441,90 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
 
 
             </Box>
-            
-              <Box sx={{ p: 3 }}>
+            {isEdit && (<Box sx={{ p: 3 }}>
+      <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
+        Details:
+      </Typography>
+
+      <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
+        {fields.map((item, index) => (
+          <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
+            <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ width: 1 }}>
+              <RHFTextField
+                size="small"
+                name={`items[${index}].quantityLeft`}
+                label="Quantity"
+                InputLabelProps={{ shrink: true }}
+              />
+
+<RHFSelect
+                name={`items[${index}].treeId`}
+                label="Trees"
+                size="small"
+                InputLabelProps={{ shrink: true }}
+                SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
+                sx={{ maxWidth: { md: 160 } }}
+              >
+                <MenuItem
+                  value=""
+                  sx={{
+                    mx: 1,
+                    borderRadius: 0.75,
+                    typography: 'body2',
+                    fontStyle: 'italic',
+                    color: 'text.secondary',
+                  }}
+                >
+                  None
+                </MenuItem>
+                <Divider />
+                {trees.map((option) => (
+                  <MenuItem
+                    key={option.id}
+                    value={option.id}
+                    sx={{
+                      mx: 1,
+                      my: 0.5,
+                      borderRadius: 0.75,
+                      typography: 'body2',
+                      textTransform: 'capitalize',
+                    }}
+                  >
+                    {option.treeName}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+
+              
+            </Stack>
+
+            <Button
+              size="small"
+              color="error"
+              startIcon={<Iconify icon="eva:trash-2-outline" />}
+              onClick={() => handleRemove(index)}
+            >
+              Remove
+            </Button>
+          </Stack>
+        ))}
+      </Stack>
+
+      <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
+
+      <Stack
+        spacing={2}
+        direction={{ xs: 'column-reverse', md: 'row' }}
+        alignItems={{ xs: 'flex-start', md: 'center' }}
+      >
+        <Button size="small" startIcon={<Iconify icon="eva:plus-fill" />} onClick={handleAdd} sx={{ flexShrink: 0 }}>
+          Add new detail
+        </Button>
+
+        
+      </Stack>
+    </Box>)}
+    {!isEdit && (<Box sx={{ p: 3 }}>
               <Typography variant="h6" sx={{ color: "text.disabled", mb: 3 }}>
                 Add Tree:
               </Typography>
@@ -489,7 +604,8 @@ export default function UserNewEditForm({ isEdit, currentUser }) {
                   sx={{ width: 1 }}
                 ></Stack>
               </Stack>
-            </Box>
+            </Box>)}
+            
             
             
 

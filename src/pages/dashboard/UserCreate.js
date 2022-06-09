@@ -40,6 +40,8 @@ export default function UserCreate() {
 
   const currentUser = growers
 
+  
+
 
   return (
     <Page title="Grower: Create a new grower">
@@ -48,7 +50,7 @@ export default function UserCreate() {
           heading={!isEdit ? 'Create a new grower' : 'Grower user'}
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Grower', href: PATH_DASHBOARD.user.list },
+            { name: 'Grower', href: PATH_DASHBOARD.growers.list },
             { name: !isEdit ? 'New Grower' : capitalCase(name) },
           ]}
         />

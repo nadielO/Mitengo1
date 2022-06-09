@@ -99,6 +99,16 @@ const navConfig = [
           
         ],
       },
+      {
+        title: 'Users',
+        path: PATH_DASHBOARD.user.list,
+        icon: ICONS.booking,
+        children: [
+         
+          { title: 'list', path: PATH_DASHBOARD.user.list },
+          
+        ],
+      },
     ],
   },
 

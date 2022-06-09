@@ -89,6 +89,8 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/sales/list" replace />, index: true },
             { path: 'list', element: <InvoiceListCopy /> },
+            { path: ':id', element: <InvoiceDetails /> },
+
             
             
           ],
@@ -99,7 +101,7 @@ export default function Router() {
             { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
             { path: 'profile', element: <UserProfile /> },
             { path: 'cards', element: <UserCards /> },
-            { path: 'list', element: <UserList /> },
+            { path: 'list', element: <GrowerList /> },
             { path: 'new', element: <UserCreateCopy /> },
             { path: ':name/edit', element: <UserCreate /> },
             { path: 'account', element: <UserAccount /> },
@@ -110,7 +112,6 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/invoice/list" replace />, index: true },
             { path: 'list', element: <InvoiceList /> },
-            { path: ':id', element: <InvoiceDetails /> },
             { path: ':id/edit', element: <InvoiceEdit /> },
             { path: 'new', element: <InvoiceCreate /> },
           ],
@@ -153,7 +154,7 @@ export default function Router() {
             { element: <Navigate to="/dashboard/user/profile" replace />, index: true },
             { path: 'profile', element: <UserProfile /> },
             { path: 'cards', element: <UserCards /> },
-            { path: 'list', element: <UserList /> },
+            { path: 'list', element: <UserListCopy /> },
             { path: 'new', element: <UserCreateCopy /> },
             { path: ':name/edit', element: <UserCreate /> },
             { path: 'account', element: <UserAccount /> },
@@ -276,7 +277,8 @@ const BlogNewPost = Loadable(lazy(() => import('../pages/dashboard/BlogNewPost')
 // USER
 const UserProfile = Loadable(lazy(() => import('../pages/dashboard/UserProfile')));
 const UserCards = Loadable(lazy(() => import('../pages/dashboard/UserCards')));
-const UserList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
+const GrowerList = Loadable(lazy(() => import('../pages/dashboard/UserList')));
+const UserListCopy = Loadable(lazy(() => import('../pages/dashboard/UserListCopy')));
 const UserAccount = Loadable(lazy(() => import('../pages/dashboard/UserAccount')));
 const UserCreate = Loadable(lazy(() => import('../pages/dashboard/UserCreate')));
 const UserCreateCopy = Loadable(lazy(() => import('../pages/dashboard/UserCreateCopy')));

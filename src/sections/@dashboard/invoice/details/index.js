@@ -95,14 +95,14 @@ export default function InvoiceDetails({ invoice }) {
               <Label
                 variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
                 color={
-                  (status === 'paid' && 'success') ||
+                  (status === 'Sold' && 'success') ||
                   (status === 'Donated' && 'warning') ||
                   (status === 'overdue' && 'error') ||
                   'default'
                 }
                 sx={{ textTransform: 'uppercase', mb: 1 }}
               >
-                Donated
+                {status}
               </Label>
 
               <Typography variant="h6">{`INV-${userId}`}</Typography>

@@ -135,7 +135,7 @@ export default function InvoiceListCopy() {
   };
 
   const handleViewRow = (id) => {
-    navigate(PATH_DASHBOARD.invoice.view(id));
+    navigate(PATH_DASHBOARD.sales.view(id));
   };
 
   const dataFiltered = applySortFilter({

@@ -57,13 +57,13 @@ export const PATH_DASHBOARD = {
   sales: path(ROOTS_DASHBOARD, '/sales'),
   permissionDenied: path(ROOTS_DASHBOARD, '/permission-denied'),
   growers: {
-    root: path(ROOTS_DASHBOARD, '/user'),
-    new: path(ROOTS_DASHBOARD, '/user/new'),
+    root: path(ROOTS_DASHBOARD, '/growers'),
+    new: path(ROOTS_DASHBOARD, '/growers/new'),
     list: path(ROOTS_DASHBOARD, '/growers/list'),
     cards: path(ROOTS_DASHBOARD, '/user/cards'),
     profile: path(ROOTS_DASHBOARD, '/user/profile'),
     account: path(ROOTS_DASHBOARD, '/user/account'),
-    edit: (name) => path(ROOTS_DASHBOARD, `/grower/${name}/edit`),
+    edit: (name) => path(ROOTS_DASHBOARD, `/growers/${name}/edit`),
     demoEdit: path(ROOTS_DASHBOARD, `/user/reece-chung/edit`),
   },
   user: {
@@ -81,7 +81,7 @@ export const PATH_DASHBOARD = {
     shop: path(ROOTS_DASHBOARD, '/e-commerce/shop'),
     list: path(ROOTS_DASHBOARD, '/trees/list'),
     checkout: path(ROOTS_DASHBOARD, '/e-commerce/checkout'),
-    new: path(ROOTS_DASHBOARD, '/e-commerce/product/new'),
+    new: path(ROOTS_DASHBOARD, '/trees/product/new'),
     view: (name) => path(ROOTS_DASHBOARD, `/tree/product/${name}`),
     edit: (name) => path(ROOTS_DASHBOARD, `/tree/product/${name}/edit`),
     demoEdit: path(ROOTS_DASHBOARD, '/e-commerce/product/nike-blazer-low-77-vintage/edit'),
@@ -101,6 +101,8 @@ export const PATH_DASHBOARD = {
   sales: {
     root: path(ROOTS_DASHBOARD, '/sales'),
     list: path(ROOTS_DASHBOARD, '/sales/list'),
+    view: (id) => path(ROOTS_DASHBOARD, `/sales/${id}`),
+
     
   },
   locations: {

@@ -172,7 +172,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
                 new Promise((resolve) => setTimeout(resolve, 500))
                 reset();
                 enqueueSnackbar('Updated success!');
-                navigate(PATH_DASHBOARD.eCommerce.list);
+                navigate(PATH_DASHBOARD.trees.list);
 
               })
 
@@ -224,7 +224,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
                 new Promise((resolve) => setTimeout(resolve, 500))
                 reset();
                 enqueueSnackbar('Post success!');
-                navigate(PATH_DASHBOARD.eCommerce.list);
+                navigate(PATH_DASHBOARD.trees.list);
 
               })
 

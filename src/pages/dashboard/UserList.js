@@ -121,7 +121,7 @@ export default function UserList() {
   };
 
   const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.user.edit(id));
+    navigate(PATH_DASHBOARD.growers.edit(id));
   };
 
   const dataFiltered = applySortFilter({
@@ -218,14 +218,14 @@ export default function UserList() {
           heading="Grower List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Grower', href: PATH_DASHBOARD.user.root },
+            { name: 'Grower', href: PATH_DASHBOARD.growers.list },
             { name: 'List' },
           ]}
           action={
             <Button
               variant="contained"
               component={RouterLink}
-              to={PATH_DASHBOARD.user.new}
+              to={PATH_DASHBOARD.growers.new}
               startIcon={<Iconify icon={'eva:plus-fill'} />}
             >
               New Grower
