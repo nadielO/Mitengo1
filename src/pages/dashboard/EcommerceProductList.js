@@ -121,6 +121,7 @@ export default function EcommerceProductList() {
   const deleteGrower = async (id) => {
     const growerDoc = doc(db, "trees", id)
     await deleteDoc(growerDoc)
+    window.location.reload(false)
     enqueueSnackbar('Post Deleted!');
   }
 

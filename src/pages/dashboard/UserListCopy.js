@@ -171,6 +171,7 @@ export default function UserList() {
   const deleteGrower = async (id) => {
     const growerDoc = doc(db, "users", id)
     await deleteDoc(growerDoc)
+    window.location.reload(false)
     enqueueSnackbar('Post Deleted!');
 
   }
