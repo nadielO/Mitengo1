@@ -188,7 +188,7 @@ export default function UserList() {
           heading="Users List"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            { name: 'Users', href: PATH_DASHBOARD.user.root },
+            { name: 'Users', href: PATH_DASHBOARD.user.list },
             { name: 'List' },
           ]}
           

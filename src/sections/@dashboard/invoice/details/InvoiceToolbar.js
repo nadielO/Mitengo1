@@ -37,11 +37,7 @@ export default function InvoiceToolbar({ invoice }) {
         sx={{ mb: 5 }}
       >
         <Stack direction="row" spacing={1}>
-          <Tooltip title="Edit">
-            <IconButton onClick={handleEdit}>
-              <Iconify icon={'eva:edit-fill'} />
-            </IconButton>
-          </Tooltip>
+          
 
           <Tooltip title="View">
             <IconButton onClick={onOpen}>
@@ -63,33 +59,10 @@ export default function InvoiceToolbar({ invoice }) {
             )}
           </PDFDownloadLink>
 
-          <Tooltip title="Print">
-            <IconButton>
-              <Iconify icon={'eva:printer-fill'} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Send">
-            <IconButton>
-              <Iconify icon={'ic:round-send'} />
-            </IconButton>
-          </Tooltip>
-
-          <Tooltip title="Share">
-            <IconButton>
-              <Iconify icon={'eva:share-fill'} />
-            </IconButton>
-          </Tooltip>
+         
         </Stack>
 
-        <Button
-          color="inherit"
-          variant="outlined"
-          startIcon={<Iconify icon={'eva:checkmark-fill'} />}
-          sx={{ alignSelf: 'flex-end' }}
-        >
-          Mark as Paid
-        </Button>
+        
       </Stack>
 
       <Dialog fullScreen open={open}>

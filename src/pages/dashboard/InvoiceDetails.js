@@ -47,9 +47,9 @@ export default function InvoiceDetails() {
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
             {
               name: 'Invoices',
-              href: PATH_DASHBOARD.invoice.root,
+              href: PATH_DASHBOARD.sales.list,
             },
-            { name: `INV-${invoice?.invoiceNumber}` || '' },
+            { name: `INV-${invoice?.userId}` || '' },
           ]}
         />
 
