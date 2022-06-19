@@ -2,8 +2,9 @@ import { useEffect, useState } from 'react';
 import orderBy from 'lodash/orderBy';
 // form
 import { useForm } from 'react-hook-form';
+import { Link as RouterLink } from 'react-router-dom';
 // @mui
-import { Container, Typography, Stack } from '@mui/material';
+import { Container, Typography, Stack, Button } from '@mui/material';
 // redux
 import { useDispatch, useSelector } from '../../redux/store';
 import { getProducts, filterProducts } from '../../redux/slices/product';
@@ -24,6 +25,10 @@ import {
   ShopProductSearch,
 } from '../../sections/@dashboard/e-commerce/shop';
 import CartWidget from '../../sections/@dashboard/e-commerce/CartWidget';
+import { collection, onSnapshot, doc, deleteDoc } from '@firebase/firestore';
+import { db } from 'src/config';
+import Iconify from 'src/components/Iconify';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -33,10 +38,24 @@ export default function EcommerceShop() {
   const dispatch = useDispatch();
 
   const [openFilter, setOpenFilter] = useState(false);
+  const [tableData, setTableData] = useState([]);
 
   const { products, sortBy, filters } = useSelector((state) => state.product);
 
   const filteredProducts = applyFilter(products, sortBy, filters);
+
+  const growersCollectionRef = collection(db, "gallery")
+
+  useEffect(() => {
+    const data = []
+    onSnapshot(growersCollectionRef, (snapshot) => {
+      snapshot.forEach((doc) => {
+        data.push({ ...doc.data(), id: doc.id })
+      })
+      setTableData(data)
+      console.log(tableData)
+    })
+  }, []);
 
   const defaultValues = {
     gender: filters.gender,
@@ -104,44 +123,36 @@ export default function EcommerceShop() {
     setValue('rating', '');
   };
 
+  const { enqueueSnackbar } = useSnackbar();
+
+const handleDelete = async (id) => {
+  const growerDoc = doc(db, "gallery", id)
+  await deleteDoc(growerDoc)
+  window.location.reload(false)
+  enqueueSnackbar('Post Deleted!');
+}
+
   return (
-    <Page title="Ecommerce: Shop">
+    <Page title="Gallery: Shop">
       <Container maxWidth={themeStretch ? false : 'lg'}>
         <HeaderBreadcrumbs
-          heading="Shop"
+          heading="Gallery"
           links={[
             { name: 'Dashboard', href: PATH_DASHBOARD.root },
-            {
-              name: 'E-Commerce',
-              href: PATH_DASHBOARD.eCommerce.root,
-            },
-            { name: 'Shop' },
+            { name: 'Gallery', href: PATH_DASHBOARD.gallery.posts },
+            { name: 'Posts' },
           ]}
+          action={
+            <Button
+              variant="contained"
+              component={RouterLink}
+              to={PATH_DASHBOARD.blog.new}
+              startIcon={<Iconify icon={'eva:plus-fill'} />}
+            >
+              New Post
+            </Button>
+          }
         />
-
-        <Stack
-          spacing={2}
-          direction={{ xs: 'column', sm: 'row' }}
-          alignItems={{ sm: 'center' }}
-          justifyContent="space-between"
-          sx={{ mb: 2 }}
-        >
-          <ShopProductSearch />
-
-          <Stack direction="row" spacing={1} flexShrink={0} sx={{ my: 1 }}>
-            <FormProvider methods={methods}>
-              <ShopFilterSidebar
-                onResetAll={handleResetFilter}
-                isOpen={openFilter}
-                onOpen={handleOpenFilter}
-                onClose={handleCloseFilter}
-              />
-            </FormProvider>
-
-            <ShopProductSort />
-          </Stack>
-        </Stack>
-
         <Stack sx={{ mb: 3 }}>
           {!isDefault && (
             <>
@@ -164,8 +175,8 @@ export default function EcommerceShop() {
           )}
         </Stack>
 
-        <ShopProductList products={filteredProducts} loading={!products.length && isDefault} />
-        <CartWidget />
+        <ShopProductList products={tableData} handleDelete={() => handleDelete(tableData.id)} loading={!tableData} />
+        
       </Container>
     </Page>
   );

@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import { paramCase } from 'change-case';
 import { Link as RouterLink } from 'react-router-dom';
 // @mui
-import { Box, Card, Link, Typography, Stack } from '@mui/material';
+import { Box, Card, Link, Typography, Stack, Button } from '@mui/material';
 // routes
 import { PATH_DASHBOARD } from '../../../../routes/paths';
 // utils
@@ -16,12 +16,14 @@ import { ColorPreview } from '../../../../components/color-utils';
 
 ShopProductCard.propTypes = {
   product: PropTypes.object,
+  handleDelete: PropTypes.func,
 };
 
-export default function ShopProductCard({ product }) {
-  const { name, cover, price, colors, status, priceSale } = product;
+export default function ShopProductCard({ product, handleDelete }) {
+  
+  const { name, galleryImage, createdAt, title, status, id, priceSale } = product;
 
-  const linkTo = PATH_DASHBOARD.eCommerce.view(paramCase(name));
+  const linkTo = PATH_DASHBOARD.gallery.view(id);
 
   return (
     <Card>
@@ -42,18 +44,17 @@ export default function ShopProductCard({ product }) {
           </Label>
         )}
 
-        <Image alt={name} src={cover} ratio="1/1" />
+        <Image alt={name} src={galleryImage} ratio="1/1" />
       </Box>
 
       <Stack spacing={2} sx={{ p: 3 }}>
         <Link to={linkTo} color="inherit" component={RouterLink}>
           <Typography variant="subtitle2" noWrap>
-            {name}
+            {title}
           </Typography>
         </Link>
 
         <Stack direction="row" alignItems="center" justifyContent="space-between">
-          <ColorPreview colors={colors} />
 
           <Stack direction="row" spacing={0.5}>
             {priceSale && (
@@ -62,9 +63,12 @@ export default function ShopProductCard({ product }) {
               </Typography>
             )}
 
-            <Typography variant="subtitle1">{fCurrency(price)}</Typography>
+            <Typography variant="subtitle1">{createdAt.toDate().toDateString()}</Typography>
+           
           </Stack>
+          <Button onClick={() => {handleDelete()}}>delete</Button>
         </Stack>
+
       </Stack>
     </Card>
   );

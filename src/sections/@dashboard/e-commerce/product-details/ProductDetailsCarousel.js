@@ -23,12 +23,13 @@ const RootStyle = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 ProductDetailsCarousel.propTypes = {
+  imgg: PropTypes.array.isRequired,
   product: PropTypes.shape({
     images: PropTypes.arrayOf(PropTypes.string),
   }),
 };
 
-export default function ProductDetailsCarousel({ product }) {
+export default function ProductDetailsCarousel({ product, imgg }) {
   const [openLightbox, setOpenLightbox] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState(0);
@@ -43,7 +44,7 @@ export default function ProductDetailsCarousel({ product }) {
 
   const slider2 = useRef(null);
 
-  const imagesLightbox = product.images.map((_image) => _image);
+  const imagesLightbox = imgg.images.map((_image) => _image);
 
   const handleOpenLightbox = (url) => {
     const selectedImage = imagesLightbox.findIndex((index) => index === url);

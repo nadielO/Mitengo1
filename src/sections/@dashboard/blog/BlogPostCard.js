@@ -40,7 +40,7 @@ BlogPostCard.propTypes = {
 export default function BlogPostCard({ post, index, handleDelete }) {
   const isDesktop = useResponsive('up', 'md');
 
-  const { cover, title, view, comment, share, author, createdAt, galleryImage, description } = post;
+  const { cover, id, title, view, comment, share, author, createdAt, galleryImage, description } = post;
 
   const latestPost = index === 0 || index === 1 || index === 2;
 
@@ -84,14 +84,15 @@ PostContent.propTypes = {
   index: PropTypes.number,
   share: PropTypes.number,
   title: PropTypes.string,
+  id: PropTypes.string,
   view: PropTypes.number,
   handleDelete: PropTypes.func
 };
 
-export function PostContent({ title, view, comment, share, createdAt, index, handleDelete }) {
+export function PostContent({ id, title, view, comment, share, createdAt, index, handleDelete }) {
   const isDesktop = useResponsive('up', 'md');
 
-  const linkTo = PATH_DASHBOARD.blog.view(paramCase(title));
+  const linkTo = PATH_DASHBOARD.blog.view(id);
 
   const latestPostLarge = index === 0;
   const latestPostSmall = index === 1 || index === 2;
@@ -132,9 +133,11 @@ export function PostContent({ title, view, comment, share, createdAt, index, han
       </Typography>
 
       
+      <Link to={linkTo} color="inherit" component={RouterLink}>
         <TextMaxLine variant={isDesktop && latestPostLarge ? 'h5' : 'subtitle2'} line={2} persistent>
           {title}
         </TextMaxLine>
+      </Link>
       
 
       <Stack

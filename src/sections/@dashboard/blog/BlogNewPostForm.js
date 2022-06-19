@@ -14,7 +14,7 @@ import { Grid, Card, Chip, Stack, Button, TextField, Typography, Autocomplete, M
 // routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
 // components
-import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect } from '../../../components/hook-form';
+import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect, RHFUploadMultiFile } from '../../../components/hook-form';
 //
 import BlogNewPostPreview from './BlogNewPostPreview';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
@@ -50,6 +50,8 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 export default function BlogNewPostForm() {
 
   const [growers, setGrowers] = useState([]);
+  const [ newUrls, setUrls ] = useState([]);
+  const [imagesList, setImagesList] = useState([]);
   const growersCollectionRef = collection(db, "locations");
 
 
@@ -84,7 +86,9 @@ export default function BlogNewPostForm() {
   const defaultValues = {
     title: '',
     description: '',
+    youTubeLink: '',
     content: '',
+    images: [],
     cover: null,
     tags: ['Logan'],
     publish: true,
@@ -110,7 +114,6 @@ export default function BlogNewPostForm() {
   } = methods;
 
   const values = watch();
-  console.log(values.cover)
   const [progress, setProgress] = useState(0)
   const onSubmit = async () => {
     const storageRef = ref(
@@ -143,6 +146,8 @@ export default function BlogNewPostForm() {
             description: values.description,
             showInApp: values.publish,
             galleryImage: newImage,
+            imagesList: newUrls,
+            youTubeLink: values.youTubeLink,
             createdAt: Timestamp.now().toDate(),
           })
             .then(() => {
@@ -150,7 +155,7 @@ export default function BlogNewPostForm() {
                 reset();
                 handleClosePreview();
                 enqueueSnackbar('Post success!');
-                navigate(PATH_DASHBOARD.blog.posts);
+                navigate(PATH_DASHBOARD.gallery.posts);
               
             })
 
@@ -188,6 +193,75 @@ export default function BlogNewPostForm() {
     setFormData({ ...formData, cover: e.target.files[0] })
   }
 
+  
+  const handleDropImages = useCallback(
+    (acceptedFiles) => {
+      const images = values.images || [];
+
+      setValue('images', [
+        ...images,
+        ...acceptedFiles.map((file) =>
+          Object.assign(file, {
+            preview: URL.createObjectURL(file),
+          })
+        ),
+      ]);
+    },
+    [setValue, values.images]
+  );
+
+  const handleRemoveAll = () => {
+    setValue('images', []);
+  };
+
+  const handleRemove = (file) => {
+    const filteredItems = values.images?.filter((_file) => _file !== file);
+    setValue('images', filteredItems);
+  };
+
+  useEffect(() => {
+    setImagesList(values.images);
+  })
+
+  const uploadFiles = (files) => {
+    const promises = []
+    imagesList.map((file) => {
+        console.log('loop');
+
+        const sotrageRef = ref(storage, `files/${file.name}`);
+
+        const uploadTask = uploadBytesResumable(sotrageRef, file);
+        promises.push(uploadTask)
+        uploadTask.on(
+            "state_changed",
+            (snapshot) => {
+                const prog = Math.round(
+                    (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+                );
+                setProgress(prog);
+            },
+            (error) => console.log(error),
+            async () => {
+                await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
+                    setUrls(prevState => [...prevState, downloadURLs])
+                    console.log("File available at", downloadURLs);
+                });
+            }
+        );
+
+
+    })
+    Promise.all(promises)
+        .then(() => alert('All images uploaded'))
+        .then(err => console.log(err))
+        .then(() => setProgress(0))
+
+};
+
+
+console.log(newUrls);
+const hyandleUploadImages = () => { uploadFiles() }
+
 
 
   return (
@@ -207,6 +281,24 @@ export default function BlogNewPostForm() {
                   <LabelStyle>Cover</LabelStyle>
                   <RHFUploadSingleFile handleImageChange name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
                 </div>
+                <div>
+                
+                {!values.cover ? <div></div> : 
+                
+                <RHFUploadMultiFile
+                showPreview
+                name="images"
+                accept="image/*"
+                maxSize={9145728}
+                onDrop={handleDropImages}
+                onRemove={handleRemove}
+                onRemoveAll={handleRemoveAll}
+                onUpload={hyandleUploadImages}
+              />
+                }
+                
+              </div>
+                
               </Stack>
             </Card>
           </Grid>
@@ -243,12 +335,15 @@ export default function BlogNewPostForm() {
                 ))}
               </Select>
             </FormControl>
+            <RHFTextField name="youTubeLink" label="Vidoe Link" />
 
                 
               </Stack>
+              
             </Card>
 
             <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
+            
             {progress === 0 ? <LoadingButton fullWidth type="submit" variant="contained" size="large" loading={isSubmitting}>
                 Post
               </LoadingButton> : (

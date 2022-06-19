@@ -121,8 +121,8 @@ export default function Router() {
           path: 'gallery',
           children: [
             { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
-            { path: 'posts', element: <BlogPosts /> },
-            { path: 'post/:title', element: <BlogPost /> },
+            { path: 'posts', element: <EcommerceShop /> },
+            { path: 'post/:name', element: <EcommerceProductDetails /> },
             { path: 'new', element: <BlogNewPost /> },
           ],
         },
@@ -176,7 +176,7 @@ export default function Router() {
           children: [
             { element: <Navigate to="/dashboard/blog/posts" replace />, index: true },
             { path: 'posts', element: <BlogPosts /> },
-            { path: 'post/:title', element: <BlogPost /> },
+            { path: 'post/:name', element: <EcommerceProductDetails /> },
             { path: 'new', element: <BlogNewPost /> },
           ],
         },

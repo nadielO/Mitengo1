@@ -10,10 +10,11 @@ import ShopProductCard from './ShopProductCard';
 
 ShopProductList.propTypes = {
   products: PropTypes.array.isRequired,
+  handleDelete: PropTypes.func,
   loading: PropTypes.bool,
 };
 
-export default function ShopProductList({ products, loading }) {
+export default function ShopProductList({ products, loading, handleDelete }) {
   return (
     <Box
       sx={{
@@ -27,8 +28,8 @@ export default function ShopProductList({ products, loading }) {
         },
       }}
     >
-      {(loading ? [...Array(12)] : products).map((product, index) =>
-        product ? <ShopProductCard key={product.id} product={product} /> : <SkeletonProductItem key={index} />
+      {(loading ? [...Array(12)] : products).map((product, index,) =>
+        product ? <ShopProductCard key={product.id} handleDelete product={product} /> : <SkeletonProductItem key={index} />
       )}
     </Box>
   );
