@@ -27,7 +27,7 @@ import {
 import CartWidget from '../../sections/@dashboard/e-commerce/CartWidget';
 import { db } from 'src/config';
 import { doc, onSnapshot } from '@firebase/firestore';
-import ReactPlayer from 'react-player/lazy'
+import ReactPlayer from 'react-player'
 
 
 // ----------------------------------------------------------------------

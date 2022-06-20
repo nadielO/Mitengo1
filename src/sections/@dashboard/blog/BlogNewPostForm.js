@@ -20,7 +20,7 @@ import BlogNewPostPreview from './BlogNewPostPreview';
 import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
 import { db, storage } from 'src/config';
 import { addDoc, collection, getDocs, Timestamp } from 'firebase/firestore';
-import ReactPlayer from 'react-player/lazy'
+import ReactPlayer from 'react-player'
 
 // ----------------------------------------------------------------------
 
