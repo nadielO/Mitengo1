@@ -5,6 +5,9 @@ import { Box } from '@mui/material';
 import { SkeletonProductItem } from '../../../../components/skeleton';
 //
 import ShopProductCard from './ShopProductCard';
+import { db } from 'src/config';
+import { deleteDoc, doc } from 'firebase/firestore';
+import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +17,14 @@ ShopProductList.propTypes = {
   loading: PropTypes.bool,
 };
 
-export default function ShopProductList({ products, loading, handleDelete }) {
+export default function ShopProductList({ products, loading }) {
+  const { enqueueSnackbar } = useSnackbar();
+    const handleDelete = async (id) => {
+      const growerDoc = doc(db, "gallery", id)
+      await deleteDoc(growerDoc)
+      window.location.reload(false)
+      enqueueSnackbar('Post Deleted!');
+    }
   return (
     <Box
       sx={{
@@ -29,7 +39,7 @@ export default function ShopProductList({ products, loading, handleDelete }) {
       }}
     >
       {(loading ? [...Array(12)] : products).map((product, index,) =>
-        product ? <ShopProductCard key={product.id} handleDelete product={product} /> : <SkeletonProductItem key={index} />
+        product ? <ShopProductCard key={product.id} handleDelete={() => handleDelete(product.id)} product={product} /> : <SkeletonProductItem key={index} />
       )}
     </Box>
   );

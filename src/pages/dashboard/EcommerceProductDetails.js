@@ -27,6 +27,8 @@ import {
 import CartWidget from '../../sections/@dashboard/e-commerce/CartWidget';
 import { db } from 'src/config';
 import { doc, onSnapshot } from '@firebase/firestore';
+import ReactPlayer from 'react-player/lazy'
+
 
 // ----------------------------------------------------------------------
 
@@ -123,7 +125,14 @@ export default function EcommerceProductDetails() {
         {logs && (
           <>
             <Card>
+              <Grid container spacing={3}>
+                <Grid item xs={12} sm={6} pb={2}>
+                <ReactPlayer width={1155} height={500} url={logs.youTubeLink} />
+                </Grid>
+              </Grid>
+            
               <Grid container>
+                <Divider />
                 <Grid item xs={12} md={12} lg={12}>
 
                   <ImageList  cols={3}>
@@ -140,7 +149,9 @@ export default function EcommerceProductDetails() {
 
                 </Grid>
                 <Grid item xs={12} md={6} lg={5}>
-
+                 <Typography pt={3} variant="h6" gutterBottom>
+                    {logs.description}
+                 </Typography>
                 </Grid>
               </Grid>
             </Card>
