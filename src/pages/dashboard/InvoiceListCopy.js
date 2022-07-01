@@ -40,7 +40,7 @@ import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } fr
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
 import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
 import { db } from 'src/config';
-import { collection, deleteDoc, doc, getDocs } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
@@ -60,13 +60,15 @@ const TABLE_HEAD = [
   { id: 'price', label: 'Amount', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
   { id: 'method', label: 'Payment Method', align: 'left' },
-  
+
   { id: '', label: 'Action', align: 'left' },
 ];
 
 // ----------------------------------------------------------------------
 
 export default function InvoiceListCopy() {
+  const [logs, setLogs] = useState([]);
+
   const theme = useTheme();
 
   const { themeStretch } = useSettings();
@@ -121,7 +123,7 @@ export default function InvoiceListCopy() {
     deleteGrower()
     window.location.reload(false)
     enqueueSnackbar('Detete success!');
-    
+
   }
 
   const handleDeleteRows = (selected) => {
@@ -130,12 +132,19 @@ export default function InvoiceListCopy() {
     setTableData(deleteRows);
   };
 
-  const handleEditRow = (id) => {
-    navigate(PATH_DASHBOARD.invoice.edit(id));
+  const handleEditRow = (id,index) => {
+    console.log(index+id)
   };
 
-  const handleViewRow = (id) => {
-    navigate(PATH_DASHBOARD.sales.view(id));
+  const handleViewRow = (id, index) => {
+    const frankDocRef = doc(db, "users", id);
+    const updateStatus = async () => {
+      await updateDoc(frankDocRef, {
+      "logs.paid": true
+      });
+    }
+    window.location.reload(false)
+    updateStatus()
   };
 
   const dataFiltered = applySortFilter({
@@ -171,10 +180,10 @@ export default function InvoiceListCopy() {
     { value: 'all', label: 'All', color: 'info', count: tableData.length },
     { value: 'sold', label: 'sold', color: 'success', count: getLengthByStatus('paid') },
     { value: 'doneted', label: 'doneted', color: 'warning', count: getLengthByStatus('unpaid') },
-    
+
   ];
-  const growersCollectionRef = collection(db, "logs");
-  const locationsCollectionRef = collection(db, "users");
+  const growersCollectionRef = collection(db, "users");
+  const locationsCollectionRef = collection(db, "growers");
 
   useEffect(() => {
     const createGrowerList = async () => {
@@ -183,33 +192,34 @@ export default function InvoiceListCopy() {
       const locationsCollection = (
         await getDocs(locationsCollectionRef)
       ).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
-     
+
       const growersTableData = growersCollection.map(
         ({
-          totalCost,
-          growerName,
-          userId,
-          purchaseDate,
+          buyerEmail,
+          buyerName,
+          growerID,
+          paid,
           status,
           treeLocation,
           treeQuantity,
-          id,
+          purchaseDate,
           paymentMethod,
+          id,
         }) => ({
-          totalCost,
-          paymentMethod,
-          growerName,
-          purchaseDate,
+          buyerEmail,
+          buyerName,
+          growerID,
+          paid,
           status,
           treeLocation,
           treeQuantity,
           id,
-          user: locationsCollection.find(
-            (user) => user.id === userId
+          grower: locationsCollection.find(
+            (grower) => grower.id === growerID
           )?.fullName
         })
       );
-      setTableData(growersTableData);
+      setLogs(growersTableData);
     }
 
     createGrowerList();
@@ -217,8 +227,16 @@ export default function InvoiceListCopy() {
   }, []);
 
 
-  
-  
+
+  const logscollectionRef = collection(db, "users")
+  useEffect(() => {
+    const getGrowers = async () => {
+      const data = await getDocs(logscollectionRef);
+      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+    };
+    getGrowers();
+  }, []);
+
 
   return (
     <Page title="Invoice: List">
@@ -230,17 +248,17 @@ export default function InvoiceListCopy() {
             { name: 'Invoices', href: PATH_DASHBOARD.invoice.root },
             { name: 'List' },
           ]}
-          
+
         />
 
-        
+
 
         <Card>
-          
+
 
           <Divider />
 
-          
+
 
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
@@ -301,23 +319,25 @@ export default function InvoiceListCopy() {
                   }
                 />
 
-                <TableBody>
-                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                    <InvoiceTableRowCopy
-                      key={row.id}
-                      row={row}
-                      selected={selected.includes(row.id)}
-                      onSelectRow={() => onSelectRow(row.id)}
-                      onViewRow={() => handleViewRow(row.id)}
-                      onEditRow={() => handleEditRow(row.id)}
-                      onDeleteRow={() => deleteGrower(row.id)}
-                    />
-                  ))}
 
-                  <TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
+                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =><TableBody> {
+                    row.logs.map((item, index) =>
+                      <InvoiceTableRowCopy
+                        key={item}
+                        row={item}
+                        selected={selected.includes(item)}
+                        onSelectRow={() => onSelectRow(item)}
+                        onViewRow={() => handleViewRow(row.id,index)}
+                        onEditRow={() => handleEditRow(row.id,index)}
+                        onDeleteRow={() => deleteGrower(row.id)}
+                      />
+                    )
+                  }<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
+                    <TableNoData isNotFound={isNotFound} />
+                  </TableBody>)}
+
+
               </Table>
             </TableContainer>
           </Scrollbar>
@@ -340,6 +360,7 @@ export default function InvoiceListCopy() {
             />
           </Box>
         </Card>
+
       </Container>
     </Page>
   );

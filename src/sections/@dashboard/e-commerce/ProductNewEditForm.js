@@ -130,6 +130,17 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isEdit, currentProduct]);
+  const [intPrice, setIntPrice] = useState("")
+
+  useEffect(() => {
+    const priceTree = async () => {
+      const realPrice = parseInt(values.priceSale)
+      setIntPrice(realPrice)
+    }
+    priceTree()
+  },[values.priceSale])
+
+  console.log(values.priceSale)
 
   const [progress, setProgress] = useState(0);
   console.log(values.cover)
@@ -165,7 +176,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
               treeName: values.name,
               treeDescription: values.description,
               showInApp: values.inStock,
-              treePrice: values.priceSale,
+              treePrice: intPrice,
               createdAt: Timestamp.now().toDate(),
             })
               .then(() => {
@@ -209,6 +220,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
 
           const growersTrees = {};
 
+
           getDownloadURL(uploadImage.snapshot.ref).then((url) => {
             const newImage = url;
             const growerRef = collection(db, "trees");
@@ -216,7 +228,7 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
               treeName: values.name,
               treeDescription: values.description,
               showInApp: values.inStock,
-              treePrice: values.priceSale,
+              treePrice: intPrice,
               image: newImage,
               createdAt: Timestamp.now().toDate(),
             })
@@ -238,6 +250,8 @@ export default function ProductNewEditForm({ isEdit, currentProduct }) {
       );
     }
   };
+
+  console.log(intPrice)
 
   const handleDrop = useCallback(
     (acceptedFiles) => {

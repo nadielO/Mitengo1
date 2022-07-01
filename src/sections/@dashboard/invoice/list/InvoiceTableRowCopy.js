@@ -12,6 +12,7 @@ import Label from '../../../../components/Label';
 import Avatar from '../../../../components/Avatar';
 import Iconify from '../../../../components/Iconify';
 import { TableMoreMenu } from '../../../../components/table';
+import {sentenceCase} from "change-case";
 
 // ----------------------------------------------------------------------
 
@@ -27,7 +28,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, id, buyerName, invoiceNumber, purchaseDate, paymentMethod, status, user, totalCost } = row;
+  const { sent, id, buyerName, invoiceNumber, purchaseDate, paid, status, user, totalCost } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -41,33 +42,40 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
 
   return (
     <TableRow hover selected={selected}>
-      <TableCell padding="checkbox">
-        <Checkbox checked={selected} onClick={onSelectRow} />
-      </TableCell>
+        <TableCell padding="checkbox">
 
+        </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={user} color={createAvatar(user).color} sx={{ mr: 2 }}>
-          {createAvatar(user).name}
+        <Avatar alt={buyerName} color={createAvatar(user).color} sx={{ mr: 2 }}>
+          {createAvatar(buyerName).name}
         </Avatar>
 
         <Stack>
           <Typography variant="subtitle2" noWrap>
-            {user}
+            {buyerName}
           </Typography>
 
-          <Link noWrap variant="body2" onClick={onViewRow} sx={{ color: 'text.disabled', cursor: 'pointer' }}>
-            {`INV-${id}`}
-          </Link>
+
         </Stack>
       </TableCell>
 
       <TableCell align="left">{purchaseDate.toDate().toDateString()}</TableCell>
 
-      
+
 
       <TableCell align="left">{fCurrency(totalCost)}</TableCell>
       <TableCell align="left">{status}</TableCell>
-      <TableCell align="left">{paymentMethod}</TableCell>
+      <TableCell align="left">
+          <Label
+              variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
+              color={
+                  (paid === false && 'error') || (paid === true && 'success') || 'success'
+              }
+              sx={{ textTransform: 'capitalize' }}
+          >
+              {paid ? "paid" : "not paid"}
+          </Label>
+      </TableCell>
 
       
 
@@ -80,6 +88,15 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
           onClose={handleCloseMenu}
           actions={
             <>
+                <MenuItem
+                    onClick={() => {
+                        onViewRow();
+                        handleCloseMenu();
+                    }}
+                >
+                    <Iconify icon={'eva:mark-fill'} />
+                    Mark As Paid
+                </MenuItem>
               <MenuItem
                 onClick={() => {
                   onDeleteRow();
