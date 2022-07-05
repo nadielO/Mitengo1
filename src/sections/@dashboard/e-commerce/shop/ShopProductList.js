@@ -8,6 +8,8 @@ import ShopProductCard from './ShopProductCard';
 import { db } from 'src/config';
 import { deleteDoc, doc } from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
+import {PATH_DASHBOARD} from "../../../../routes/paths";
+import {useNavigate} from "react-router-dom";
 
 // ----------------------------------------------------------------------
 
@@ -18,12 +20,16 @@ ShopProductList.propTypes = {
 };
 
 export default function ShopProductList({ products, loading }) {
+    const navigate = useNavigate();
   const { enqueueSnackbar } = useSnackbar();
     const handleDelete = async (id) => {
       const growerDoc = doc(db, "gallery", id)
       await deleteDoc(growerDoc)
       window.location.reload(false)
       enqueueSnackbar('Post Deleted!');
+    }
+    const handleEdit = async (id) => {
+        navigate(PATH_DASHBOARD.gallery.edit(id));
     }
   return (
     <Box
@@ -39,7 +45,7 @@ export default function ShopProductList({ products, loading }) {
       }}
     >
       {(loading ? [...Array(12)] : products).map((product, index,) =>
-        product ? <ShopProductCard key={product.id} handleDelete={() => handleDelete(product.id)} product={product} /> : <SkeletonProductItem key={index} />
+        product ? <ShopProductCard key={product.id} handleEdit={() => handleEdit(product.id)} handleDelete={() => handleDelete(product.id)} product={product} /> : <SkeletonProductItem key={index} />
       )}
     </Box>
   );

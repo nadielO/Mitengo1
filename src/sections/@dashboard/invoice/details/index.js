@@ -66,11 +66,11 @@ export default function InvoiceDetails({ invoice }) {
     totalAmount,
     createDate,
     totalPrice,
-    totalCost,
+    amount,
     invoiceFrom,
     invoiceNumber,
     buyerName,
-    userId,
+    userID,
     purchaseDate,
     treeName,
     growerName,
@@ -105,7 +105,7 @@ export default function InvoiceDetails({ invoice }) {
                 {status}
               </Label>
 
-              <Typography variant="h6">{`INV-${userId}`}</Typography>
+              <Typography variant="h6">{`INV-${userID}`}</Typography>
             </Box>
           </Grid>
 
@@ -140,7 +140,7 @@ export default function InvoiceDetails({ invoice }) {
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Total
             </Typography>
-            <Typography variant="body2">{totalCost}</Typography>
+            <Typography variant="body2">{amount * treeQuantity}</Typography>
           </Grid>
         </Grid>
 

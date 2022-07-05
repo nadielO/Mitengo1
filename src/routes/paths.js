@@ -130,6 +130,7 @@ export const PATH_DASHBOARD = {
     posts: path(ROOTS_DASHBOARD, '/blog/posts'),
     new: path(ROOTS_DASHBOARD, '/blog/new'),
     view: (name) => path(ROOTS_DASHBOARD, `/blog/post/${name}`),
+    edit: (id) => path(ROOTS_DASHBOARD, `/blog/edit`),
     demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
   },
   gallery: {
@@ -137,6 +138,7 @@ export const PATH_DASHBOARD = {
     posts: path(ROOTS_DASHBOARD, '/gallery/posts'),
     new: path(ROOTS_DASHBOARD, '/gallery/new'),
     view: (name) => path(ROOTS_DASHBOARD, `/blog/post/${name}`),
+    edit: (id) => path(ROOTS_DASHBOARD, `/gallery/${id}/edit`),
     demoView: path(ROOTS_DASHBOARD, '/blog/post/apply-these-7-secret-techniques-to-improve-event'),
   },
 };

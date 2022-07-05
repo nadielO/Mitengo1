@@ -3,7 +3,7 @@ import numeral from 'numeral';
 // ----------------------------------------------------------------------
 
 export function fCurrency(number) {
-  return numeral(number).format(Number.isInteger(number) ? 'K0,0' : '$K,0.00');
+  return numeral(number).format(Number.isInteger(number) ? 'K0,0' : 'K0.00');
 }
 
 export function fPercent(number) {

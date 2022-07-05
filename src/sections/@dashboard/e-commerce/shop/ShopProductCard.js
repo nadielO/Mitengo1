@@ -17,9 +17,10 @@ import { ColorPreview } from '../../../../components/color-utils';
 ShopProductCard.propTypes = {
   product: PropTypes.object,
   handleDelete: PropTypes.func,
+  handleEdit: PropTypes.func,
 };
 
-export default function ShopProductCard({ product, handleDelete }) {
+export default function ShopProductCard({ product, handleDelete, handleEdit }) {
   
   const { name, galleryImage, createdAt, title, status, id, priceSale } = product;
 
@@ -63,12 +64,13 @@ export default function ShopProductCard({ product, handleDelete }) {
               </Typography>
             )}
 
-            <Typography variant="subtitle1">{createdAt.toDate().toDateString()}</Typography>
+            <Typography>{createdAt.toDate().toDateString()}</Typography>
            
           </Stack>
-          <Button onClick={() => {handleDelete()}}>delete</Button>
-        </Stack>
 
+        </Stack>
+        <Button onClick={() => {handleDelete()}}>delete</Button>
+        <Button onClick={() => {handleEdit()}}>edit</Button>
       </Stack>
     </Card>
   );

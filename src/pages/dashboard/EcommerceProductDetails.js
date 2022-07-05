@@ -120,7 +120,7 @@ export default function EcommerceProductDetails() {
           ]}
         />
 
-        <CartWidget />
+
 
         {logs && (
           <>
@@ -148,7 +148,7 @@ export default function EcommerceProductDetails() {
                   </ImageList>
 
                 </Grid>
-                <Grid item xs={12} md={6} lg={5}>
+                <Grid item xs={12} md={12} lg={12}>
                  <Typography pt={3} variant="h6" gutterBottom>
                     {logs.description}
                  </Typography>

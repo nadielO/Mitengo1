@@ -8,14 +8,19 @@ import { Stack, Card } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 // components
 import { FormProvider, RHFTextField } from '../../../../components/hook-form';
+import {getAuth, updatePassword} from "firebase/auth";
+import {initializeApp} from "firebase/app";
+import {FIREBASE_API} from "../../../../config";
+import {current} from "@reduxjs/toolkit";
 
 // ----------------------------------------------------------------------
 
 export default function AccountChangePassword() {
+  const firebaseApp = initializeApp(FIREBASE_API);
   const { enqueueSnackbar } = useSnackbar();
 
   const ChangePassWordSchema = Yup.object().shape({
-    oldPassword: Yup.string().required('Old Password is required'),
+
     newPassword: Yup.string().min(6, 'Password must be at least 6 characters').required('New Password is required'),
     confirmNewPassword: Yup.string().oneOf([Yup.ref('newPassword'), null], 'Passwords must match'),
   });
@@ -33,25 +38,35 @@ export default function AccountChangePassword() {
 
   const {
     reset,
+    watch,
     handleSubmit,
+    setValue,
     formState: { isSubmitting },
   } = methods;
 
+  const values = watch()
+  const auth = getAuth(firebaseApp);
+  const newPassword = values.newPassword;
   const onSubmit = async () => {
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      reset();
-      enqueueSnackbar('Update success!');
-    } catch (error) {
-      console.error(error);
-    }
+
+    const user = auth.currentUser;
+    await updatePassword(user, newPassword).then(() => {
+      enqueueSnackbar('success!');
+      reset()
+    }).catch((error) => {
+      enqueueSnackbar(error);
+      alert("please logout and login again")
+      // An error ocurred
+      // ...
+    });
   };
+  console.log(newPassword)
 
   return (
     <Card sx={{ p: 3 }}>
       <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Stack spacing={3} alignItems="flex-end">
-          <RHFTextField name="oldPassword" type="password" label="Old Password" />
+
 
           <RHFTextField name="newPassword" type="password" label="New Password" />
 

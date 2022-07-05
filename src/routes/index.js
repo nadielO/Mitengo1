@@ -124,6 +124,7 @@ export default function Router() {
             { path: 'posts', element: <EcommerceShop /> },
             { path: 'post/:name', element: <EcommerceProductDetails /> },
             { path: 'new', element: <BlogNewPost /> },
+            { path: ':id/edit', element: <BlogNewPost/>},
           ],
         },
         {
@@ -178,6 +179,7 @@ export default function Router() {
             { path: 'posts', element: <BlogPosts /> },
             { path: 'post/:name', element: <EcommerceProductDetails /> },
             { path: 'new', element: <BlogNewPost /> },
+            { path: ':id/edit', element: <BlogNewPost /> },
           ],
         },
         {

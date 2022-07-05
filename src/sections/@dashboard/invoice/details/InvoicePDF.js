@@ -18,6 +18,7 @@ export default function InvoicePDF({ invoice }) {
     taxes,
     status,
     logs,
+    amount,
     dueDate,
     discount,
     treeQuantity,
@@ -32,7 +33,7 @@ export default function InvoicePDF({ invoice }) {
     invoiceFrom,
     invoiceNumber,
     buyerName,
-    userId,
+    userID,
     purchaseDate,
     treeName,
     growerName,
@@ -47,7 +48,7 @@ export default function InvoicePDF({ invoice }) {
           <Image source="/logo/sygenlogo_big.png" style={{ height: 32 }} />
           <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
             <Text style={styles.h3}>{status}</Text>
-            <Text> {`INV-${userId}`} </Text>
+            <Text> {`INV-${userID}`} </Text>
           </View>
         </View>
 
@@ -118,11 +119,11 @@ export default function InvoicePDF({ invoice }) {
                 </View>
 
                 <View style={styles.tableCell_3}>
-                  <Text>{totalCost}</Text>
+                  <Text>{amount}</Text>
                 </View>
 
                 <View style={[styles.tableCell_3, styles.alignRight]}>
-                  <Text>{fCurrency(totalCost)}</Text>
+                  <Text>{amount * treeQuantity}</Text>
                 </View>
               </View>
             
@@ -135,7 +136,7 @@ export default function InvoicePDF({ invoice }) {
                 <Text>Subtotal</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{fCurrency(totalCost)}</Text>
+                <Text>{fCurrency(subTotalPrice)}</Text>
               </View>
             </View>
 
@@ -171,7 +172,7 @@ export default function InvoicePDF({ invoice }) {
                 <Text style={styles.h4}>Total</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text style={styles.h4}>{fCurrency(totalCost)}</Text>
+                <Text style={styles.h4}>{fCurrency(amount * treeQuantity)}</Text>
               </View>
             </View>
           </View>

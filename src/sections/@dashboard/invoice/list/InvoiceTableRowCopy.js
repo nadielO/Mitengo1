@@ -28,7 +28,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, id, buyerName, invoiceNumber, purchaseDate, paid, status, user, totalCost } = row;
+  const { sent, id, buyerName,treeQuantity, amount, timestamp, paid, status, userID, totalCost } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -46,24 +46,25 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
 
         </TableCell>
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
-        <Avatar alt={buyerName} color={createAvatar(user).color} sx={{ mr: 2 }}>
-          {createAvatar(buyerName).name}
+        <Avatar alt={userID} color={createAvatar(userID).color} sx={{ mr: 2 }}>
+          {createAvatar(userID).name}
         </Avatar>
 
         <Stack>
-          <Typography variant="subtitle2" noWrap>
-            {buyerName}
-          </Typography>
-
-
+            <Typography variant="subtitle2" noWrap>
+            {userID}
+            </Typography>
+            <Link noWrap variant="body2" onClick={onViewRow} sx={{ color: 'text.disabled', cursor: 'pointer' }}>
+                click For Invoice
+            </Link>
         </Stack>
       </TableCell>
 
-      <TableCell align="left">{purchaseDate.toDate().toDateString()}</TableCell>
+      <TableCell align="left">{timestamp.toDate().toDateString()}</TableCell>
 
 
 
-      <TableCell align="left">{fCurrency(totalCost)}</TableCell>
+      <TableCell align="left">{fCurrency(amount * treeQuantity)}</TableCell>
       <TableCell align="left">{status}</TableCell>
       <TableCell align="left">
           <Label
@@ -77,9 +78,9 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
           </Label>
       </TableCell>
 
-      
 
-      
+
+
 
       <TableCell align="left">
         <TableMoreMenu
@@ -90,12 +91,13 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
             <>
                 <MenuItem
                     onClick={() => {
-                        onViewRow();
+                        onEditRow();
                         handleCloseMenu();
                     }}
                 >
-                    <Iconify icon={'eva:mark-fill'} />
-                    Mark As Paid
+                    <Iconify icon={'eva:edit-fill'} />
+
+                    {paid ? "Not Paid" : "Paid"}
                 </MenuItem>
               <MenuItem
                 onClick={() => {
@@ -108,8 +110,8 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
                 Delete
               </MenuItem>
 
-             
-              
+
+
             </>
           }
         />

@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Link, Card, Typography, CardHeader, Stack } from '@mui/material';
 // components
 import Iconify from '../../../../components/Iconify';
+import useAuth from "../../../../hooks/useAuth";
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ ProfileAbout.propTypes = {
 
 export default function ProfileAbout({ profile }) {
   const { quote, country, email, role, company, school } = profile;
+  const {user} = useAuth()
 
   return (
     <Card>
@@ -32,39 +34,21 @@ export default function ProfileAbout({ profile }) {
         <Typography variant="body2">{quote}</Typography>
 
         <Stack direction="row">
-          <IconStyle icon={'eva:pin-fill'} />
-          <Typography variant="body2">
-            Live at &nbsp;
-            <Link component="span" variant="subtitle2" color="text.primary">
-              {country}
-            </Link>
-          </Typography>
-        </Stack>
-
-        <Stack direction="row">
           <IconStyle icon={'eva:email-fill'} />
-          <Typography variant="body2">{email}</Typography>
+          <Typography variant="body2">{user?.email}</Typography>
         </Stack>
 
         <Stack direction="row">
           <IconStyle icon={'ic:round-business-center'} />
           <Typography variant="body2">
-            {role} at &nbsp;
+            Works at &nbsp;
             <Link component="span" variant="subtitle2" color="text.primary">
-              {company}
+              Sygen
             </Link>
           </Typography>
         </Stack>
 
-        <Stack direction="row">
-          <IconStyle icon={'ic:round-business-center'} />
-          <Typography variant="body2">
-            Studied at &nbsp;
-            <Link component="span" variant="subtitle2" color="text.primary">
-              {school}
-            </Link>
-          </Typography>
-        </Stack>
+
       </Stack>
     </Card>
   );

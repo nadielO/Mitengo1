@@ -38,9 +38,9 @@ import HeaderBreadcrumbs from '../../components/HeaderBreadcrumbs';
 import { TableNoData, TableEmptyRows, TableHeadCustom, TableSelectedActions } from '../../components/table';
 // sections
 import InvoiceAnalytic from '../../sections/@dashboard/invoice/InvoiceAnalytic';
-import { InvoiceTableRowCopy, InvoiceTableToolbar } from '../../sections/@dashboard/invoice/list';
+import {InvoiceTableRow, InvoiceTableRowCopy, InvoiceTableToolbar} from '../../sections/@dashboard/invoice/list';
 import { db } from 'src/config';
-import { collection, deleteDoc, doc, getDocs, updateDoc } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDocs, updateDoc} from 'firebase/firestore';
 import { useSnackbar } from 'notistack';
 
 // ----------------------------------------------------------------------
@@ -59,7 +59,7 @@ const TABLE_HEAD = [
   { id: 'createDate', label: 'Create', align: 'left' },
   { id: 'price', label: 'Amount', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
-  { id: 'method', label: 'Payment Method', align: 'left' },
+  { id: 'method', label: 'Payment', align: 'left' },
 
   { id: '', label: 'Action', align: 'left' },
 ];
@@ -132,20 +132,30 @@ export default function InvoiceListCopy() {
     setTableData(deleteRows);
   };
 
-  const handleEditRow = (id,index) => {
-    console.log(index+id)
+  const handleEditRow = async (id, paid) => {
+    const updateLogs = doc(db, "logs", id);
+    if (paid === true){
+      await updateDoc(updateLogs, {
+        paid: false
+      });
+      window.location.reload(false)
+      enqueueSnackbar('marked as not Paid!');
+    }else {
+      await updateDoc(updateLogs, {
+        paid: true
+      });
+      window.location.reload(false)
+      enqueueSnackbar('marked as paid!');
+    }
   };
 
-  const handleViewRow = (id, index) => {
-    const frankDocRef = doc(db, "users", id);
-    const updateStatus = async () => {
-      await updateDoc(frankDocRef, {
-      "logs.paid": true
-      });
-    }
-    window.location.reload(false)
-    updateStatus()
+  const handleViewRow = (id) => {
+    navigate(PATH_DASHBOARD.sales.view(id));
   };
+
+  const [dataD,setDataD] = useState([])
+
+
 
   const dataFiltered = applySortFilter({
     tableData,
@@ -182,8 +192,8 @@ export default function InvoiceListCopy() {
     { value: 'doneted', label: 'doneted', color: 'warning', count: getLengthByStatus('unpaid') },
 
   ];
-  const growersCollectionRef = collection(db, "users");
-  const locationsCollectionRef = collection(db, "growers");
+  const growersCollectionRef = collection(db, "logs");
+  const locationsCollectionRef = collection(db, "users");
 
   useEffect(() => {
     const createGrowerList = async () => {
@@ -195,31 +205,30 @@ export default function InvoiceListCopy() {
 
       const growersTableData = growersCollection.map(
         ({
-          buyerEmail,
-          buyerName,
-          growerID,
+          amount,
+          items,
           paid,
+          timestamp,
+          userID,
           status,
-          treeLocation,
-          treeQuantity,
+           treeQuantity,
           purchaseDate,
           paymentMethod,
           id,
         }) => ({
-          buyerEmail,
-          buyerName,
-          growerID,
-          paid,
-          status,
-          treeLocation,
-          treeQuantity,
+          amount,
           id,
-          grower: locationsCollection.find(
-            (grower) => grower.id === growerID
+          items,
+          treeQuantity,
+          paid,
+          timestamp,
+          status,
+          userID: locationsCollection.find(
+              (user) => user.id === userID
           )?.fullName
         })
       );
-      setLogs(growersTableData);
+      setTableData(growersTableData);
     }
 
     createGrowerList();
@@ -232,10 +241,11 @@ export default function InvoiceListCopy() {
   useEffect(() => {
     const getGrowers = async () => {
       const data = await getDocs(logscollectionRef);
-      setTableData(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
+      setLogs(data.docs.map((doc) => ({ ...doc.data(), id: doc.id })));
     };
     getGrowers();
   }, []);
+
 
 
   return (
@@ -254,12 +264,7 @@ export default function InvoiceListCopy() {
 
 
         <Card>
-
-
           <Divider />
-
-
-
           <Scrollbar>
             <TableContainer sx={{ minWidth: 800, position: 'relative' }}>
               {selected.length > 0 && (
@@ -320,23 +325,23 @@ export default function InvoiceListCopy() {
                 />
 
 
-                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) =><TableBody> {
-                    row.logs.map((item, index) =>
+                <TableBody>
+                  {dataFiltered.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
                       <InvoiceTableRowCopy
-                        key={item}
-                        row={item}
-                        selected={selected.includes(item)}
-                        onSelectRow={() => onSelectRow(item)}
-                        onViewRow={() => handleViewRow(row.id,index)}
-                        onEditRow={() => handleEditRow(row.id,index)}
-                        onDeleteRow={() => deleteGrower(row.id)}
+                          key={row.id}
+                          row={row}
+                          selected={selected.includes(row.id)}
+                          onSelectRow={() => onSelectRow(row.id)}
+                          onViewRow={() => handleViewRow(row.id)}
+                          onEditRow={() => handleEditRow(row.id, row.paid)}
+                          onDeleteRow={() => deleteGrower(row.id)}
                       />
-                    )
-                  }<TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
+                  ))}
 
-                    <TableNoData isNotFound={isNotFound} />
-                  </TableBody>)}
+                  <TableEmptyRows height={denseHeight} emptyRows={emptyRows(page, rowsPerPage, tableData.length)} />
 
+                  <TableNoData isNotFound={isNotFound} />
+                </TableBody>
 
               </Table>
             </TableContainer>
