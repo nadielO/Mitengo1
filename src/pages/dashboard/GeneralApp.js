@@ -95,14 +95,14 @@ export default function GeneralApp() {
   let sum = 0
   logs.forEach(function(value, index, arry){
     if (value.status === "Sold"){
-       sum += value.amount * value.treeQuantity;
+       sum += value.treePrice * value.treeQuantity;
     }
   });
 
    let Donetions = 0
    logs.forEach(function(value, index, arry){
      if (value.status === "Donated"){
-        Donetions += value.amount * value.treeQuantity;
+        Donetions += value.treePrice * value.treeQuantity;
      }
    });
    

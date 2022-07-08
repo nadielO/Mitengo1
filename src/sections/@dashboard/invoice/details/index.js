@@ -56,17 +56,19 @@ export default function InvoiceDetails({ invoice }) {
     taxes,
     status,
     logs,
+    buyerEmail,
     dueDate,
     discount,
     treeQuantity,
     growersNumber,
     invoiceTo,
     user,
+    growerID,
     email,
     totalAmount,
     createDate,
     totalPrice,
-    amount,
+    treePrice,
     invoiceFrom,
     invoiceNumber,
     buyerName,
@@ -115,22 +117,21 @@ export default function InvoiceDetails({ invoice }) {
             </Typography>
             <Typography variant="body2">{buyerName}</Typography>
             <Typography variant="body2">{}</Typography>
-            <Typography variant="body2">Phone: {phoneNumber}</Typography>
+            <Typography variant="body2">Email: {buyerEmail}</Typography>
           </Grid>
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Invoice to
             </Typography>
-            <Typography variant="body2">{growerName}</Typography>
+            <Typography variant="body2">Grower Name: {growerName}</Typography>
             <Typography variant="body2">{}</Typography>
-            <Typography variant="body2">Phone: {growersNumber}</Typography>
           </Grid>
 
           
 
           <Grid item xs={12} sm={6} sx={{ mb: 5 }}>
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
-              Itemns
+              Items
             </Typography>
             <Typography variant="body2" sx={{ color: "text.disabled" }}>Tree Name: {treeName}</Typography>
             <Typography variant="body2" sx={{ color: "text.disabled" }}>Quantity: {treeQuantity}</Typography>
@@ -140,7 +141,7 @@ export default function InvoiceDetails({ invoice }) {
             <Typography paragraph variant="overline" sx={{ color: 'text.disabled' }}>
               Total
             </Typography>
-            <Typography variant="body2">{amount * treeQuantity}</Typography>
+            <Typography variant="body2">{treePrice * treeQuantity}</Typography>
           </Grid>
         </Grid>
 

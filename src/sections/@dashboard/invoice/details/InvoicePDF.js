@@ -18,8 +18,9 @@ export default function InvoicePDF({ invoice }) {
     taxes,
     status,
     logs,
-    amount,
+    treePrice,
     dueDate,
+    paid,
     discount,
     treeQuantity,
     growersNumber,
@@ -70,8 +71,7 @@ export default function InvoicePDF({ invoice }) {
 
         <View style={[styles.gridContainer, styles.mb40]}>
           <View style={styles.col6}>
-            <Text style={[styles.overline, styles.mb8]}>Date create</Text>
-            <Text style={styles.body1}>waiting For Real Data</Text>
+            
           </View>
           
         </View>
@@ -119,11 +119,11 @@ export default function InvoicePDF({ invoice }) {
                 </View>
 
                 <View style={styles.tableCell_3}>
-                  <Text>{amount}</Text>
+                  <Text>{treePrice}</Text>
                 </View>
 
                 <View style={[styles.tableCell_3, styles.alignRight]}>
-                  <Text>{amount * treeQuantity}</Text>
+                  <Text>{treePrice * treeQuantity}</Text>
                 </View>
               </View>
             
@@ -172,7 +172,7 @@ export default function InvoicePDF({ invoice }) {
                 <Text style={styles.h4}>Total</Text>
               </View>
               <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text style={styles.h4}>{fCurrency(amount * treeQuantity)}</Text>
+                <Text style={styles.h4}>{fCurrency(treePrice * treeQuantity)}</Text>
               </View>
             </View>
           </View>

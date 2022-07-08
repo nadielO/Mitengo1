@@ -28,7 +28,7 @@ InvoiceTableRowCopy.propTypes = {
 export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onViewRow, onEditRow, onDeleteRow }) {
   const theme = useTheme();
 
-  const { sent, id, buyerName,treeQuantity, amount, timestamp, paid, status, userID, totalCost } = row;
+  const { sent, id, buyerName,treeQuantity, treePrice, treeID, treeName, purchaseDate, paid, status, userID, totalCost } = row;
 
   const [openMenu, setOpenMenuActions] = useState(null);
 
@@ -60,12 +60,14 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
         </Stack>
       </TableCell>
 
-      <TableCell align="left">{timestamp.toDate().toDateString()}</TableCell>
+      <TableCell align="left">{purchaseDate.toDate().toDateString()}</TableCell>
 
+      <TableCell align="left">{treeName}</TableCell>
 
+      <TableCell align="left">{fCurrency(treePrice * treeQuantity)}</TableCell>
 
-      <TableCell align="left">{fCurrency(amount * treeQuantity)}</TableCell>
       <TableCell align="left">{status}</TableCell>
+
       <TableCell align="left">
           <Label
               variant={theme.palette.mode === 'light' ? 'ghost' : 'filled'}
@@ -99,19 +101,7 @@ export default function InvoiceTableRowCopy({ row, selected, onSelectRow, onView
 
                     {paid ? "Not Paid" : "Paid"}
                 </MenuItem>
-              <MenuItem
-                onClick={() => {
-                  onDeleteRow();
-                  handleCloseMenu();
-                }}
-                sx={{ color: 'error.main' }}
-              >
-                <Iconify icon={'eva:trash-2-outline'} />
-                Delete
-              </MenuItem>
-
-
-
+              
             </>
           }
         />

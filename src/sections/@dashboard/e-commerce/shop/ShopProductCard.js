@@ -67,10 +67,8 @@ export default function ShopProductCard({ product, handleDelete, handleEdit }) {
             <Typography>{createdAt.toDate().toDateString()}</Typography>
            
           </Stack>
-
+          <Button onClick={() => {handleDelete()}}>delete</Button>
         </Stack>
-        <Button onClick={() => {handleDelete()}}>delete</Button>
-        <Button onClick={() => {handleEdit()}}>edit</Button>
       </Stack>
     </Card>
   );

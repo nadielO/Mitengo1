@@ -1,28 +1,49 @@
+import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useCallback, useEffect, useState } from 'react';
-import CircularProgress from '@mui/material/CircularProgress';
-
 import { useSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 // form
-import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm, Controller } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
-import { LoadingButton } from '@mui/lab';
 import { styled } from '@mui/material/styles';
-import { Grid, Card, Chip, Stack, Button, TextField, Typography, Autocomplete, MenuItem, Divider, FormControl, InputLabel, Select } from '@mui/material';
-// routes
+import { LoadingButton } from '@mui/lab';
+import { Grid, Card, Chip, Stack, Button, TextField, Typography, Autocomplete, MenuItem, Divider, FormControl, InputLabel, Select } from '@mui/material';// routes
 import { PATH_DASHBOARD } from '../../../routes/paths';
-// components
-import { RHFSwitch, RHFEditor, FormProvider, RHFTextField, RHFUploadSingleFile, RHFSelect, RHFUploadMultiFile } from '../../../components/hook-form';
-//
-import BlogNewPostPreview from './BlogNewPostPreview';
-import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
-import { db, storage } from 'src/config';
-import { addDoc, collection, getDocs, Timestamp } from 'firebase/firestore';
+import { useParams, useLocation } from 'react-router-dom';
 import ReactPlayer from 'react-player'
+import CircularProgress from '@mui/material/CircularProgress';
+
+// components
+import {
+  FormProvider,
+  RHFSwitch,
+  RHFSelect,
+  RHFEditor,
+  RHFTextField,
+  RHFRadioGroup,
+  RHFUploadMultiFile,
+  RHFUploadSingleFile,
+} from '../../../components/hook-form';
+import { db, storage } from 'src/config';
+import { addDoc, collection, doc, getDocs, Timestamp, updateDoc } from 'firebase/firestore';
+import { getDownloadURL, ref, uploadBytesResumable } from 'firebase/storage';
+import { async } from '@firebase/util';
 
 // ----------------------------------------------------------------------
+
+const GENDER_OPTION = [
+  { label: 'Men', value: 'Men' },
+  { label: 'Women', value: 'Women' },
+  { label: 'Kids', value: 'Kids' },
+];
+
+const CATEGORY_OPTION = [
+  { group: 'Clothing', classify: ['Shirts', 'T-shirts', 'Jeans', 'Leather'] },
+  { group: 'Tailored', classify: ['Suits', 'Blazers', 'Trousers', 'Waistcoats'] },
+  { group: 'Accessories', classify: ['Shoes', 'Backpacks and bags', 'Bracelets', 'Face masks'] },
+];
 
 const TAGS_OPTION = [
   'Toy Story 3',
@@ -48,11 +69,15 @@ const LabelStyle = styled(Typography)(({ theme }) => ({
 
 // ----------------------------------------------------------------------
 
-export default function BlogNewPostForm() {
+ProductNewEditFormBlog.propTypes = {
+  isEdit: PropTypes.bool,
+  currentProduct: PropTypes.object,
+};
 
+export default function ProductNewEditFormBlog({ isEdit, currentProduct }) {
   const [growers, setGrowers] = useState([]);
-  const [ newUrls, setUrls ] = useState([]);
-  const [imagesList, setImagesList] = useState([]);
+  const [ newUrls, setUrls ] = useState(currentProduct?.imagesList || []);
+  const [imagesListt, setImagesListt] = useState([]);
   const growersCollectionRef = collection(db, "locations");
 
 
@@ -63,113 +88,81 @@ export default function BlogNewPostForm() {
     };
     getGrowers();
   }, []);
+  const { id } = useParams();
 
   const navigate = useNavigate();
 
-  const [open, setOpen] = useState(false);
-
   const { enqueueSnackbar } = useSnackbar();
 
-  const handleOpenPreview = () => {
-    setOpen(true);
-  };
-
-  const handleClosePreview = () => {
-    setOpen(false);
-  };
-
-  const NewBlogSchema = Yup.object().shape({
-    title: Yup.string().required('Title is required'),
-    description: Yup.string().required('Description is required'),
-    cover: Yup.mixed().required('Cover is required'),
+  const NewProductSchema = Yup.object().shape({
+    
   });
 
-  const defaultValues = {
-    title: '',
-    description: '',
-    youTubeLink: '',
-    content: '',
-    images: [],
-    cover: null,
-    tags: ['Logan'],
-    publish: true,
-    comments: true,
-    metaTitle: '',
-    metaDescription: '',
-    metaKeywords: ['Logan'],
-  };
+  const defaultValues = useMemo(
+    () => ({
+        title: currentProduct?.title || '',
+        country: currentProduct?.locationID || "",
+        images: currentProduct?.imagesList || [],
+        description: currentProduct?.description || '',
+        youTubeLink: currentProduct?.youTubeLink || [],
+        cover: currentProduct?.galleryImage || '',
+        publish: currentProduct?.showInApp || true,
+        price: currentProduct?.price || 0,
+        priceSale: currentProduct?.treePrice || 0,
+        tags: currentProduct?.tags || [TAGS_OPTION[0]],
+        inStock: currentProduct?.showInApp || true,
+        taxes: true,
+        gender: currentProduct?.gender || GENDER_OPTION[2].value,
+        category: currentProduct?.category || CATEGORY_OPTION[0].classify[1],
+    }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [currentProduct]
+  );
 
   const methods = useForm({
-    resolver: yupResolver(NewBlogSchema),
+    resolver: yupResolver(NewProductSchema),
     defaultValues,
   });
-  const [newLocation, setLocation] = useState("");
 
   const {
     reset,
     watch,
     control,
     setValue,
+    getValues,
     handleSubmit,
-    formState: { isSubmitting, isValid },
+    formState: { isSubmitting },
   } = methods;
 
   const values = watch();
-  const [progress, setProgress] = useState(0)
-  const onSubmit = async () => {
-    const storageRef = ref(
-      storage,
-      `/gallery/${Date.now()}${values.cover}`
-    );
-    const uploadImage = uploadBytesResumable(storageRef, values.cover);
+  const [newLocation, setLocation] = useState(currentProduct?.locationID || "");
+  console.log(currentProduct?.imagesList)
+  useEffect(() => {
+    if (isEdit && currentProduct) {
+      reset(defaultValues);
+    }
+    if (!isEdit) {
+      reset(defaultValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isEdit, currentProduct]);
+  const [intPrice, setIntPrice] = useState("")
 
-    uploadImage.on(
-      "state_changed",
-      (snapshot) => {
-        const progressPercent = Math.round(
-          (snapshot.bytesTransferred / snapshot.totalBytes) * 100
-        );
-        setProgress(progressPercent);
-      },
-      (err) => {
-        console.log(err);
-      },
-      () => {
+  useEffect(() => {
+    const priceTree = async () => {
+      const realPrice = parseInt(values.priceSale)
+      setIntPrice(realPrice)
+    }
+    priceTree()
+  },[values.priceSale])
 
+  console.log(values.priceSale)
 
-        getDownloadURL(uploadImage.snapshot.ref).then((url) => {
-          const newImage = url;
-          const growerRef = collection(db, "gallery");
+  const [progress, setProgress] = useState(0);
+  console.log(values.cover)
 
-          addDoc(growerRef, {
-            title: values.title,
-            locationID: newLocation,
-            description: values.description,
-            showInApp: values.publish,
-            galleryImage: newImage,
-            imagesList: newUrls,
-            youTubeLink: values.youTubeLink,
-            createdAt: Timestamp.now().toDate(),
-          })
-            .then(() => {
-              new Promise((resolve) => setTimeout(resolve, 500))
-                reset();
-                handleClosePreview();
-                enqueueSnackbar('Post success!');
-                navigate(PATH_DASHBOARD.gallery.posts);
-              
-            })
+  //sdedwdwqdwdwqd
 
-            .catch((err) => {
-              alert(
-                "There was An Error When Add The Grower Check Your Internet Or Contact Sygen"
-              );
-            });
-        });
-      }
-    );
-   
-  };
   const [formData, setFormData] = useState({
 
     Image: "",
@@ -194,6 +187,15 @@ export default function BlogNewPostForm() {
     setFormData({ ...formData, cover: e.target.files[0] })
   }
 
+  const [ files, setFiles ] = useState("")
+
+  const changeHandler = (event) => {
+    setFiles(event.target.files);
+   };
+
+  console.log(files)
+
+
   
   const handleDropImages = useCallback(
     (acceptedFiles) => {
@@ -208,7 +210,7 @@ export default function BlogNewPostForm() {
         ),
       ]);
     },
-    [setValue, values.images]
+    [setValue.imagesList]
   );
 
   const handleRemoveAll = () => {
@@ -221,13 +223,13 @@ export default function BlogNewPostForm() {
   };
 
   useEffect(() => {
-    setImagesList(values.images);
+    setImagesListt(values.images);
   })
 
   const uploadFiles = (files) => {
     const promises = []
-    imagesList.map((file) => {
-        console.log('loop');
+    if (files) {}
+    imagesListt.map((file) => {
 
         const sotrageRef = ref(storage, `files/${file.name}`);
 
@@ -245,7 +247,6 @@ export default function BlogNewPostForm() {
             async () => {
                 await getDownloadURL(uploadTask.snapshot.ref).then((downloadURLs) => {
                     setUrls(prevState => [...prevState, downloadURLs])
-                    console.log("File available at", downloadURLs);
                 });
             }
         );
@@ -261,11 +262,40 @@ export default function BlogNewPostForm() {
 
 const hyandleUploadImages = () => { uploadFiles() }
 
+const onSubmit = async () => {
+    
+  const userCollectionRef = doc(db, "gallery", id)
+  
+         await updateDoc(userCollectionRef, {
+          title: values.title,
+          description: values.description,
+          showInApp: values.publish,
+          youTubeLink: values.youTubeLink,
+          locationID: values.country,
+        })
+          .then(() => {
+            new Promise((resolve) => setTimeout(resolve, 500))
+            reset();
+            enqueueSnackbar('Updated success!');
+            navigate(PATH_DASHBOARD.gallery.posts);
 
+          })
+
+          .catch((err) => {
+            alert(
+              "There was An Error When Add The Grower Check Your Internet Or Contact Sygen"
+            );
+          });
+
+};
+
+const [ uploadWaitingList, setUploadWaitingList ] = useState([])
+
+
+console.log(newUrls)
 
   return (
-    <>
-      <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+    <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <Card sx={{ p: 3 }}>
@@ -274,22 +304,19 @@ const hyandleUploadImages = () => { uploadFiles() }
 
                 <RHFTextField name="description" label="Description" multiline rows={3} />
 
-                
-
-                <div>
-                  <LabelStyle>Cover</LabelStyle>
-                  <RHFUploadSingleFile handleImageChange name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
-                </div>
                 <div>
                 
-                {!values.cover ? <div></div> : 
+                {!isEdit ? <div>
+                        <LabelStyle>Cover</LabelStyle>
+                        <RHFUploadSingleFile handleImageChange name="cover" accept="image/*" maxSize={3145728} onDrop={handleDrop} />
+                    </div> :
                 
                 <RHFUploadMultiFile
-                showPreview
                 name="images"
                 accept="image/*"
                 maxSize={9145728}
                 onDrop={handleDropImages}
+                onChange={changeHandler}
                 onRemove={handleRemove}
                 onRemoveAll={handleRemoveAll}
                 onUpload={hyandleUploadImages}
@@ -316,24 +343,14 @@ const hyandleUploadImages = () => { uploadFiles() }
                  
                 </div>
 
-                <FormControl>
-              <InputLabel id="demo-simple-select-label">Location</InputLabel>
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={newLocation}
-                label="Age"
-                onChange={(event) => {
-                  setLocation(event.target.value);
-                }}
-              >
-                {growers.map((grower) => (
-                  <MenuItem key={grower.id} value={grower.id}>
-                    {grower.district}
-                  </MenuItem>
+                <RHFSelect name="country" label="Location" placeholder="Location">
+                <option value="" />
+                {growers.map((option) => (
+                  <option key={option.id} value={option.id}>
+                    {option.district}
+                  </option>
                 ))}
-              </Select>
-            </FormControl>
+              </RHFSelect>
             <RHFTextField name="youTubeLink" label="Vidoe Link" />
 
                 
@@ -355,15 +372,5 @@ const hyandleUploadImages = () => { uploadFiles() }
           </Grid>
         </Grid>
       </FormProvider>
-
-      <BlogNewPostPreview
-        values={values}
-        isOpen={open}
-        isValid={isValid}
-        isSubmitting={isSubmitting}
-        onClose={handleClosePreview}
-        onSubmit={handleSubmit(onSubmit)}
-      />
-    </>
   );
 }

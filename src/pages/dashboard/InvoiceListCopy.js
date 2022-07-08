@@ -57,6 +57,7 @@ const SERVICE_OPTIONS = [
 const TABLE_HEAD = [
   { id: 'invoiceNumber', label: 'Client', align: 'left' },
   { id: 'createDate', label: 'Create', align: 'left' },
+  { id: 'treeName', label: 'Tree', align: 'left' },
   { id: 'price', label: 'Amount', align: 'left' },
   { id: 'status', label: 'Status', align: 'left' },
   { id: 'method', label: 'Payment', align: 'left' },
@@ -193,7 +194,9 @@ export default function InvoiceListCopy() {
 
   ];
   const growersCollectionRef = collection(db, "logs");
+  const growerNumberCollectionRef = collection(db, "growers");
   const locationsCollectionRef = collection(db, "users");
+  const treesCollectionRef = collection(db, "trees");
 
   useEffect(() => {
     const createGrowerList = async () => {
@@ -202,26 +205,44 @@ export default function InvoiceListCopy() {
       const locationsCollection = (
         await getDocs(locationsCollectionRef)
       ).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const treesCollection = (
+        await getDocs(treesCollectionRef)
+      ).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+      const growerNumberCollection = (
+        await getDocs(growerNumberCollectionRef)
+      ).docs.map((doc) => ({ ...doc.data(), id: doc.id }));
 
       const growersTableData = growersCollection.map(
         ({
-          amount,
-          items,
+          buyEmail,
+          buyerName,
+          
+          growerID,
           paid,
-          timestamp,
           userID,
+          treeID,
           status,
-           treeQuantity,
+          treeQuantity,
+          treePrice,
+          treeName,
           purchaseDate,
           paymentMethod,
           id,
         }) => ({
-          amount,
+          buyEmail,
+          buyerName,
+          treePrice,
+          growerID: growerNumberCollection.find(
+            (grower) => grower.id === growerID
+        )?.fullName,
+          treeName,
+          treeID: treesCollection.find(
+            (tree) => tree.id === treeID
+          )?.treeName,
           id,
-          items,
+          purchaseDate,
           treeQuantity,
           paid,
-          timestamp,
           status,
           userID: locationsCollection.find(
               (user) => user.id === userID
